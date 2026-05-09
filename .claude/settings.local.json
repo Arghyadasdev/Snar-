@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e \"try{require\\('framer-motion'\\);console.log\\('fm:ok'\\)}catch\\(e\\){console.log\\('fm:missing'\\)}; try{require\\('lucide-react'\\);console.log\\('lr:ok'\\)}catch\\(e\\){console.log\\('lr:missing'\\)}\")"
+    ]
+  }
+}

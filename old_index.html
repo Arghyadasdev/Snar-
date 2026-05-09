@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAR — Redefine Your Wardrobe</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,300;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --g:#00E87A;--g-dim:#00C066;--g-dark:#003D20;
+  --g-glow:rgba(0,232,122,0.18);--g-glow2:rgba(0,232,122,0.06);
+  --black:#020804;--black2:#060E08;--black3:#0A1410;
+  --surface:#0D1A10;--surface2:#111F14;
+  --border:rgba(0,232,122,0.12);--border2:rgba(0,232,122,0.22);
+  --white:#F2FFF5;--muted:#4A6650;--muted2:#2E4433;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--white);cursor:none;overflow-x:hidden}
+#cur{width:8px;height:8px;background:var(--g);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999}
+#cur-r{width:32px;height:32px;border:1px solid var(--g);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.6;transition:width .3s,height .3s}
+nav{position:fixed;top:0;width:100%;z-index:200;padding:1.4rem 3.5rem;display:flex;align-items:center;justify-content:space-between;transition:background .4s,border-color .4s,backdrop-filter .4s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(2,8,4,0.88);border-color:var(--border);backdrop-filter:blur(16px)}
+.logo{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:700;letter-spacing:.06em;color:var(--white);text-decoration:none;display:flex;align-items:center}
+.logo-dot{display:inline-block;width:8px;height:8px;background:var(--g);border-radius:50%;margin:0 1px 6px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--g-glow)}50%{box-shadow:0 0 0 6px transparent}}
+.nav-center{display:flex;gap:2.5rem}
+.nav-center a{color:var(--muted);text-decoration:none;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;transition:color .2s;position:relative}
+.nav-center a::after{content:'';position:absolute;bottom:-3px;left:0;width:0;height:1px;background:var(--g);transition:width .3s}
+.nav-center a:hover{color:var(--white)}
+.nav-center a:hover::after{width:100%}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.nav-icon{color:var(--muted);text-decoration:none;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.nav-icon:hover{color:var(--white)}
+.nav-cart{display:flex;align-items:center;gap:.5rem;border:1px solid var(--border2);padding:.5rem 1.2rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--g);background:var(--g-glow2);transition:background .25s,border-color .25s;cursor:none}
+.nav-cart:hover{background:var(--g-glow);border-color:var(--g)}
+
+/* HERO */
+.hero{height:100vh;min-height:700px;position:relative;display:flex;align-items:center;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%);animation:gridDrift 20s linear infinite}
+@keyframes gridDrift{from{background-position:0 0}to{background-position:80px 80px}}
+.hero-glow{position:absolute;top:40%;left:58%;width:560px;height:560px;background:radial-gradient(circle,rgba(0,232,122,0.13) 0%,transparent 65%);transform:translate(-50%,-50%);animation:glowPulse 4s ease-in-out infinite alternate}
+@keyframes glowPulse{from{opacity:.7;transform:translate(-50%,-50%) scale(1)}to{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+.hero-content{position:relative;z-index:10;padding:0 3.5rem;max-width:660px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.6rem;margin-bottom:2rem;animation:fadeUp .8s ease both}
+.eyebrow-line{width:24px;height:1px;background:var(--g)}
+.eyebrow-text{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--g)}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(4rem,7vw,7.5rem);font-weight:300;line-height:.95;letter-spacing:-.02em;margin-bottom:2rem;animation:fadeUp .8s .1s ease both}
+.hero-h1 strong{font-weight:600;display:block}
+.hero-h1 em{font-style:italic;color:var(--g);display:block;text-shadow:0 0 60px rgba(0,232,122,0.4)}
+.hero-sub{font-size:1rem;color:var(--muted);line-height:1.75;max-width:400px;margin-bottom:3rem;font-weight:300;animation:fadeUp .8s .2s ease both}
+.hero-btns{display:flex;align-items:center;gap:1.5rem;animation:fadeUp .8s .3s ease both}
+.btn-g{display:inline-flex;align-items:center;gap:.6rem;background:var(--g);color:var(--black);padding:.9rem 2.2rem;font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:none;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.btn-g::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.15);transform:translateX(-110%) skewX(-15deg);transition:transform .45s}
+.btn-g:hover::before{transform:translateX(110%) skewX(-15deg)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,232,122,0.35)}
+.btn-ghost{display:inline-flex;align-items:center;gap:.5rem;color:var(--muted);text-decoration:none;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;transition:color .2s,gap .2s;cursor:none}
+.btn-ghost:hover{color:var(--white);gap:.8rem}
+
+/* HERO VISUAL - 3D floating card */
+.hero-visual{position:absolute;right:6%;top:50%;transform:translateY(-50%);width:360px;height:460px;perspective:1200px;z-index:5}
+.float-card{width:100%;height:100%;transform-style:preserve-3d;animation:floatCard 7s ease-in-out infinite;position:relative}
+@keyframes floatCard{0%,100%{transform:rotateY(-18deg) rotateX(6deg) translateY(0)}33%{transform:rotateY(-8deg) rotateX(-4deg) translateY(-22px)}65%{transform:rotateY(-24deg) rotateX(9deg) translateY(12px)}}
+.card-face{position:absolute;inset:0;background:linear-gradient(145deg,var(--surface) 0%,var(--black2) 60%,#001A0A 100%);border:1px solid var(--border2);overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.8),0 0 0 1px rgba(0,232,122,.06),inset 0 1px 0 rgba(0,232,122,.1)}
+.card-face::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-55deg,transparent,transparent 18px,rgba(0,232,122,.025) 18px,rgba(0,232,122,.025) 19px)}
+.card-shine{position:absolute;top:-40%;left:-40%;width:180%;height:180%;background:radial-gradient(ellipse at 30% 25%,rgba(0,232,122,.09) 0%,transparent 55%);animation:shineDrift 5s ease-in-out infinite alternate}
+@keyframes shineDrift{from{transform:translate(0,0)}to{transform:translate(8%,8%)}}
+.card-img-area{position:absolute;top:12%;left:50%;transform:translateX(-50%);width:75%;height:58%;display:flex;align-items:center;justify-content:center}
+.card-bottom{position:absolute;bottom:0;left:0;right:0;padding:1.4rem 1.6rem;background:linear-gradient(to top,rgba(2,8,4,.95) 0%,transparent 100%);border-top:1px solid var(--border)}
+.card-tag{display:inline-block;background:var(--g);color:var(--black);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;padding:.22rem .7rem;margin-bottom:.6rem;font-weight:500}
+.card-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--white);margin-bottom:.25rem}
+.card-price{font-size:1rem;color:var(--g);font-weight:500}
+.card-badge{position:absolute;background:var(--surface2);border:1px solid var(--border2);padding:.5rem .9rem;backdrop-filter:blur(8px)}
+.badge-tl{top:-4%;left:-15%;animation:badgeFloat1 4s ease-in-out infinite}
+.badge-br{bottom:14%;right:-16%;animation:badgeFloat2 5s ease-in-out infinite}
+@keyframes badgeFloat1{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes badgeFloat2{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.badge-val{font-size:.85rem;font-weight:500;color:var(--g)}
+.badge-lbl{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:.1rem}
+
+.hero-stats{position:absolute;bottom:3rem;left:3.5rem;display:flex;gap:3rem;z-index:10;animation:fadeUp .8s .5s ease both}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--white);line-height:1}
+.stat-num span{color:var(--g)}
+.stat-lbl{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.scroll-cue{position:absolute;bottom:3rem;right:3.5rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;z-index:10;opacity:.5;animation:fadeUp .8s .7s ease both}
+.scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,transparent,var(--g));animation:scrollPulse 2s ease-in-out infinite}
+@keyframes scrollPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.scroll-text{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);writing-mode:vertical-rl}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+
+/* MARQUEE */
+.marquee{position:relative;overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.75rem 0;background:var(--black2)}
+.marquee-track{display:flex;width:max-content;animation:marquee 22s linear infinite}
+.marquee-item{display:flex;align-items:center;gap:1.8rem;padding:0 1.8rem;white-space:nowrap;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.marquee-item b{color:var(--g);font-weight:400}
+.mdot{width:3px;height:3px;background:var(--border2);border-radius:50%;flex-shrink:0}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* FEATURES */
+.features-row{background:var(--black3);border-top:1px solid var(--border);padding:2.8rem 3.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem}
+.feat{display:flex;align-items:flex-start;gap:1rem}
+.feat-icon{width:42px;height:42px;border:1px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.feat:hover .feat-icon{background:var(--g-glow)}
+.feat-icon svg{width:18px;height:18px;stroke:var(--g);fill:none;stroke-width:1.5}
+.feat-title{font-size:.84rem;font-weight:500;color:var(--white);margin-bottom:.2rem}
+.feat-desc{font-size:.75rem;color:var(--muted);line-height:1.6}
+
+/* SECTION */
+.section{padding:7rem 3.5rem;position:relative}
+.sec-label{display:inline-flex;align-items:center;gap:.6rem;font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--g);margin-bottom:1.2rem}
+.sec-label::before{content:'';width:20px;height:1px;background:var(--g)}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,4vw,4rem);font-weight:300;line-height:1.05;letter-spacing:-.02em}
+.sec-title strong{font-weight:600}
+
+/* CATEGORIES */
+.cats{background:var(--black2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.cats-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem}
+.cats-link{color:var(--muted);text-decoration:none;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;display:flex;align-items:center;gap:.5rem;transition:color .2s,gap .25s}
+.cats-link:hover{color:var(--g);gap:.8rem}
+.cats-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;grid-template-rows:auto auto;gap:1px;background:var(--border)}
+.cat{position:relative;overflow:hidden;cursor:none;background:var(--black);transition:background .3s}
+.cat:hover{background:var(--black3)}
+.cat-tall{grid-row:span 2}
+.cat-inner{padding:2.5rem;height:100%;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;position:relative;z-index:1}
+.cat-tall .cat-inner{min-height:540px}
+.cat-svg{position:absolute;inset:0;width:100%;height:100%;opacity:.5;transition:opacity .4s,transform .6s}
+.cat:hover .cat-svg{opacity:.75;transform:scale(1.04)}
+.cat-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cat-num{font-family:'Cormorant Garamond',serif;font-size:.9rem;color:var(--muted2)}
+.cat-arrow{width:34px;height:34px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.9rem;transition:border-color .3s,color .3s,background .3s,transform .3s}
+.cat:hover .cat-arrow{border-color:var(--g);color:var(--g);background:var(--g-glow2);transform:rotate(45deg)}
+.cat-sub{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.cat-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--white)}
+.cat-tall .cat-name{font-size:2.5rem}
+.cat::after{content:'';position:absolute;bottom:0;right:0;width:0;height:0;border-style:solid;border-width:0 0 40px 40px;border-color:transparent transparent var(--g-dark) transparent;opacity:0;transition:opacity .3s}
+.cat:hover::after{opacity:1}
+
+/* PRODUCTS */
+.products-section{background:var(--black)}
+.prod-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:3rem}
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+.prod-card{cursor:none;position:relative}
+.prod-img{aspect-ratio:3/4;position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);margin-bottom:1rem;transition:border-color .3s}
+.prod-card:hover .prod-img{border-color:var(--border2)}
+.prod-svg{width:100%;height:100%;transition:transform .5s ease;display:block}
+.prod-card:hover .prod-svg{transform:scale(1.04)}
+.prod-badge{position:absolute;top:.7rem;left:.7rem;background:var(--g);color:var(--black);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.18rem .55rem;font-weight:500;z-index:2}
+.prod-badge.sale{background:transparent;border:1px solid var(--g);color:var(--g)}
+.prod-wish{position:absolute;top:.7rem;right:.7rem;width:30px;height:30px;border:1px solid var(--border);background:rgba(2,8,4,.7);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.8rem;z-index:2;opacity:0;transition:opacity .3s,border-color .3s,color .3s;cursor:none}
+.prod-card:hover .prod-wish{opacity:1}
+.prod-wish:hover{border-color:var(--g);color:var(--g)}
+.prod-overlay{position:absolute;bottom:0;left:0;right:0;padding:.7rem;background:rgba(0,232,122,.07);border-top:1px solid var(--border);opacity:0;transform:translateY(4px);transition:opacity .3s,transform .3s;z-index:2}
+.prod-card:hover .prod-overlay{opacity:1;transform:translateY(0)}
+.prod-add{width:100%;background:transparent;border:none;color:var(--g);font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;padding:.4rem;cursor:none}
+.prod-name{font-size:.88rem;font-weight:400;color:var(--white);margin-bottom:.2rem}
+.prod-cat{font-size:.72rem;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem}
+.prod-pricing{display:flex;align-items:center;gap:.6rem}
+.prod-price{font-size:.92rem;font-weight:500;color:var(--g)}
+.prod-old{font-size:.78rem;color:var(--muted2);text-decoration:line-through}
+
+/* BANNER */
+.banner{background:var(--black2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:6rem 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative;overflow:hidden}
+.banner::before{content:'';position:absolute;right:-10%;top:-30%;width:500px;height:500px;background:radial-gradient(circle,rgba(0,232,122,.08) 0%,transparent 65%);pointer-events:none}
+.banner-pill{background:var(--g-glow);border:1px solid var(--border2);color:var(--g);font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;padding:.3rem .8rem;display:inline-block;margin-bottom:1.5rem}
+.banner-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,3.5vw,3.8rem);font-weight:300;line-height:1.05;margin-bottom:1.5rem}
+.banner-h2 em{font-style:italic;color:var(--g)}
+.banner-p{color:var(--muted);line-height:1.8;margin-bottom:2rem;font-size:.95rem}
+.sizes-wrap{display:flex;gap:.5rem;margin-bottom:2.2rem;flex-wrap:wrap}
+.sz{width:38px;height:38px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;letter-spacing:.05em;color:var(--muted);cursor:none;transition:border-color .2s,color .2s,background .2s}
+.sz:hover,.sz.on{border-color:var(--g);color:var(--g);background:var(--g-glow2)}
+
+/* 3D scene */
+.cube-scene{width:100%;height:380px;perspective:900px;display:flex;align-items:center;justify-content:center;position:relative}
+.cube{width:160px;height:160px;transform-style:preserve-3d;animation:spinCube 14s linear infinite;position:relative}
+@keyframes spinCube{from{transform:rotateX(20deg) rotateY(0)}to{transform:rotateX(20deg) rotateY(360deg)}}
+.face{position:absolute;width:160px;height:160px;border:1px solid var(--border2);background:rgba(0,232,122,.03)}
+.f-front{transform:translateZ(80px)}
+.f-back{transform:rotateY(180deg) translateZ(80px)}
+.f-left{transform:rotateY(-90deg) translateZ(80px)}
+.f-right{transform:rotateY(90deg) translateZ(80px)}
+.f-top{transform:rotateX(90deg) translateZ(80px)}
+.f-bot{transform:rotateX(-90deg) translateZ(80px)}
+.cube2{width:72px;height:72px;transform-style:preserve-3d;animation:spinCube 9s linear infinite reverse;position:absolute;right:8%;top:12%}
+.face2{position:absolute;width:72px;height:72px;border:1px solid rgba(0,232,122,.15);background:rgba(0,232,122,.02)}
+.f2-front{transform:translateZ(36px)}
+.f2-back{transform:rotateY(180deg) translateZ(36px)}
+.f2-left{transform:rotateY(-90deg) translateZ(36px)}
+.f2-right{transform:rotateY(90deg) translateZ(36px)}
+.f2-top{transform:rotateX(90deg) translateZ(36px)}
+.f2-bot{transform:rotateX(-90deg) translateZ(36px)}
+.orbit-wrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.orbit{border:1px solid rgba(0,232,122,.1);border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center;animation:orbitSpin 12s linear infinite}
+.orbit1{width:280px;height:280px}
+.orbit2{width:180px;height:180px;animation-duration:7s;animation-direction:reverse}
+.orbit-dot{position:absolute;top:0;left:50%;transform:translate(-50%,-50%);width:7px;height:7px;background:var(--g);border-radius:50%;box-shadow:0 0 10px var(--g)}
+@keyframes orbitSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* TESTIMONIALS */
+.testi-section{background:var(--black2);border-top:1px solid var(--border)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:3rem}
+.testi{background:var(--black2);padding:2.2rem 2rem;transition:background .3s;position:relative;overflow:hidden}
+.testi::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:transparent;transition:background .3s}
+.testi:hover{background:var(--surface)}
+.testi:hover::before{background:linear-gradient(to right,transparent,var(--g),transparent)}
+.testi-q{font-family:'Cormorant Garamond',serif;font-size:3.5rem;color:var(--g);opacity:.25;line-height:.6;margin-bottom:1rem}
+.testi-body{color:var(--white);line-height:1.75;font-size:.88rem;margin-bottom:1.5rem;font-weight:300}
+.testi-stars{color:var(--g);font-size:.72rem;letter-spacing:.3em;margin-bottom:1.2rem}
+.testi-author{display:flex;align-items:center;gap:.75rem}
+.testi-av{width:36px;height:36px;border-radius:50%;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:500;color:var(--g);background:var(--g-glow2);flex-shrink:0}
+.testi-nm{font-size:.82rem;font-weight:500;color:var(--white)}
+.testi-loc{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+
+/* NEWSLETTER */
+.newsletter{padding:6rem 3.5rem;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;background:var(--black);border-top:1px solid var(--border);position:relative;overflow:hidden}
+.nl-accent{position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--g),transparent)}
+.nl-h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3.2rem);font-weight:300;line-height:1.1}
+.nl-h2 em{font-style:italic;color:var(--g)}
+.nl-sub{color:var(--muted);margin-top:.8rem;font-size:.9rem;line-height:1.7}
+.nl-form{display:flex;flex-direction:column;gap:.8rem}
+.nl-input-wrap{display:flex}
+.nl-input{flex:1;background:var(--surface);border:1px solid var(--border);border-right:none;color:var(--white);padding:.9rem 1.3rem;font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s}
+.nl-input:focus{border-color:var(--border2)}
+.nl-input::placeholder{color:var(--muted2)}
+.nl-btn{background:var(--g);color:var(--black);border:none;padding:.9rem 1.8rem;font-family:'DM Sans',sans-serif;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;cursor:none;transition:background .2s;white-space:nowrap}
+.nl-btn:hover{background:var(--g-dim)}
+.nl-note{font-size:.7rem;color:var(--muted2);letter-spacing:.05em}
+
+/* FOOTER */
+footer{background:var(--black2);border-top:1px solid var(--border);padding:4rem 3.5rem 2rem}
+.footer-top{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid var(--border)}
+.fl-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;letter-spacing:.06em;color:var(--white);display:flex;align-items:center;margin-bottom:1rem}
+.fl-desc{color:var(--muted);font-size:.82rem;line-height:1.75;max-width:210px;margin-bottom:1.5rem}
+.fl-social{display:flex;gap:.5rem}
+.fl-soc{width:32px;height:32px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.7rem;text-decoration:none;transition:border-color .2s,color .2s}
+.fl-soc:hover{border-color:var(--g);color:var(--g)}
+.fc h4{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--white);margin-bottom:1.3rem}
+.fc ul{list-style:none}
+.fc li{margin-bottom:.6rem}
+.fc a{color:var(--muted);text-decoration:none;font-size:.8rem;transition:color .2s}
+.fc a:hover{color:var(--g)}
+.footer-bot{display:flex;justify-content:space-between;align-items:center;padding-top:1.5rem}
+.footer-copy{font-size:.72rem;color:var(--muted2)}
+.pays{display:flex;gap:.5rem}
+.pay{background:var(--surface);border:1px solid var(--border);padding:.22rem .55rem;font-size:.62rem;letter-spacing:.05em;color:var(--muted)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-24px);transition:opacity .7s ease,transform .7s ease}
+.reveal-l.vis{opacity:1;transform:translateX(0)}
+.reveal-r{opacity:0;transform:translateX(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal-r.vis{opacity:1;transform:translateX(0)}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo"><img src="logo.png" alt="SNAR Logo" style="height: 36px; object-fit: contain;"></a>
+  <div class="nav-center">
+    <a href="#">Men</a>
+    <a href="#">Women</a>
+    <a href="#">Collections</a>
+    <a href="#">Lookbook</a>
+    <a href="#">About</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="nav-icon">Search</a>
+    <a href="#" class="nav-icon">Account</a>
+    <div class="nav-cart">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Cart (0)
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow"><span class="eyebrow-line"></span><span class="eyebrow-text">New Season — SS 2026</span></div>
+    <h1 class="hero-h1">Dress<br><strong>Beyond</strong><em>Ordinary.</em></h1>
+    <p class="hero-sub">Premium clothing crafted for the modern wardrobe. Elevated basics, bold statements, and silhouettes that speak before you do.</p>
+    <div class="hero-btns">
+      <a href="#" class="btn-g">Explore Collection <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+      <a href="#" class="btn-ghost">View Lookbook</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="float-card">
+      <div class="card-face">
+        <div class="card-shine"></div>
+        <div class="card-img-area">
+          <svg viewBox="0 0 220 280" width="90%" height="90%" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0D1A10"/><stop offset="100%" stop-color="#030806"/></linearGradient></defs>
+            <path d="M68 28 L42 78 L65 88 L65 245 L155 245 L155 88 L178 78 L152 28 Q135 40 110 40 Q85 40 68 28Z" fill="url(#sg)" stroke="rgba(0,232,122,0.35)" stroke-width="1"/>
+            <path d="M85 28 Q110 18 135 28 L138 52 Q120 62 110 64 Q100 62 82 52Z" fill="rgba(0,232,122,0.18)" stroke="rgba(0,232,122,0.4)" stroke-width=".8"/>
+            <line x1="110" y1="68" x2="110" y2="240" stroke="rgba(0,232,122,0.12)" stroke-width="1"/>
+            <circle cx="110" cy="100" r="3.5" fill="rgba(0,232,122,0.5)"/>
+            <circle cx="110" cy="125" r="3.5" fill="rgba(0,232,122,0.5)"/>
+            <circle cx="110" cy="150" r="3.5" fill="rgba(0,232,122,0.5)"/>
+          </svg>
+        </div>
+        <div class="card-bottom">
+          <div class="card-tag">New Arrival</div>
+          <div class="card-name">Signature Linen Shirt</div>
+          <div class="card-price">₹2,199</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-badge badge-tl"><div class="badge-val">500+</div><div class="badge-lbl">Products</div></div>
+    <div class="card-badge badge-br"><div class="badge-val">★ 4.9</div><div class="badge-lbl">Avg Rating</div></div>
+  </div>
+
+  <div class="hero-stats">
+    <div><div class="stat-num">12<span>K+</span></div><div class="stat-lbl">Happy Customers</div></div>
+    <div><div class="stat-num">500<span>+</span></div><div class="stat-lbl">Products</div></div>
+    <div><div class="stat-num">98<span>%</span></div><div class="stat-lbl">Satisfaction</div></div>
+  </div>
+  <div class="scroll-cue"><span class="scroll-text">Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span class="marquee-item"><b>Free Shipping</b> on orders above ₹999 <span class="mdot"></span></span>
+    <span class="marquee-item"><b>New Arrivals</b> every Monday <span class="mdot"></span></span>
+    <span class="marquee-item"><b>Sustainable</b> organic cotton fabrics <span class="mdot"></span></span>
+    <span class="marquee-item"><b>30-day</b> easy returns <span class="mdot"></span></span>
+    <span class="marquee-item"><b>COD</b> &amp; UPI accepted <span class="mdot"></span></span>
+    <span class="marquee-item"><b>SS26</b> collection live now <span class="mdot"></span></span>
+    <span class="marquee-item"><b>Free Shipping</b> on orders above ₹999 <span class="mdot"></span></span>
+    <span class="marquee-item"><b>New Arrivals</b> every Monday <span class="mdot"></span></span>
+    <span class="marquee-item"><b>Sustainable</b> organic cotton fabrics <span class="mdot"></span></span>
+    <span class="marquee-item"><b>30-day</b> easy returns <span class="mdot"></span></span>
+    <span class="marquee-item"><b>COD</b> &amp; UPI accepted <span class="mdot"></span></span>
+    <span class="marquee-item"><b>SS26</b> collection live now <span class="mdot"></span></span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-row">
+  <div class="feat reveal">
+    <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    <div><div class="feat-title">Free Shipping</div><div class="feat-desc">Orders above ₹999, pan India</div></div>
+  </div>
+  <div class="feat reveal">
+    <div class="feat-icon"><svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></div>
+    <div><div class="feat-title">Easy Returns</div><div class="feat-desc">No-questions 30-day return policy</div></div>
+  </div>
+  <div class="feat reveal">
+    <div class="feat-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+    <div><div class="feat-title">Premium Quality</div><div class="feat-desc">100% organic certified fabrics</div></div>
+  </div>
+  <div class="feat reveal">
+    <div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+    <div><div class="feat-title">Secure Payment</div><div class="feat-desc">UPI, Visa, RuPay, COD all accepted</div></div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<section class="section cats">
+  <div class="cats-header">
+    <div><div class="sec-label reveal-l">What we offer</div><div class="sec-title reveal-l">Shop by <strong>Category</strong></div></div>
+    <a href="#" class="cats-link reveal-r">All Collections →</a>
+  </div>
+  <div class="cats-grid">
+    <div class="cat cat-tall reveal">
+      <svg class="cat-svg" viewBox="0 0 400 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="400" height="620" fill="#060E08"/>
+        <path d="M130 100 L95 165 L122 175 L122 500 L278 500 L278 175 L305 165 L270 100 Q240 115 200 115 Q160 115 130 100Z" fill="rgba(0,232,122,0.08)" stroke="rgba(0,232,122,0.3)" stroke-width="1"/>
+        <path d="M155 100 Q200 86 245 100 L248 130 Q225 142 200 145 Q175 142 152 130Z" fill="rgba(0,232,122,0.2)" stroke="rgba(0,232,122,0.5)" stroke-width=".8"/>
+        <line x1="200" y1="148" x2="200" y2="495" stroke="rgba(0,232,122,0.1)" stroke-width="1"/>
+        <circle cx="200" cy="185" r="5" fill="rgba(0,232,122,0.4)"/><circle cx="200" cy="215" r="5" fill="rgba(0,232,122,0.4)"/><circle cx="200" cy="245" r="5" fill="rgba(0,232,122,0.4)"/>
+      </svg>
+      <div class="cat-inner">
+        <div class="cat-top"><div class="cat-num">01</div><div class="cat-arrow">↗</div></div>
+        <div><div class="cat-sub">48 Styles</div><div class="cat-name">Men's Shirts</div></div>
+      </div>
+    </div>
+    <div class="cat reveal">
+      <svg class="cat-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="300" fill="#060E08"/>
+        <path d="M90 50 L65 100 L85 108 L78 260 L222 260 L215 108 L235 100 L210 50 Q185 62 150 62 Q115 62 90 50Z" fill="rgba(0,232,122,0.07)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+        <path d="M108 50 Q150 38 192 50 L195 75 Q170 86 150 88 Q130 86 105 75Z" fill="rgba(0,232,122,0.18)" stroke="rgba(0,232,122,0.45)" stroke-width=".8"/>
+        <ellipse cx="150" cy="170" rx="45" ry="55" fill="none" stroke="rgba(0,232,122,0.06)" stroke-width="12"/>
+      </svg>
+      <div class="cat-inner">
+        <div class="cat-top"><div class="cat-num">02</div><div class="cat-arrow">↗</div></div>
+        <div><div class="cat-sub">62 Styles</div><div class="cat-name">Women's Dresses</div></div>
+      </div>
+    </div>
+    <div class="cat reveal">
+      <svg class="cat-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="300" fill="#060E08"/>
+        <path d="M75 55 L50 115 L75 125 L68 255 L232 255 L225 125 L250 115 L225 55 Q200 68 175 72 L150 80 L125 72 Q100 68 75 55Z" fill="rgba(0,232,122,0.07)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+        <line x1="75" y1="55" x2="125" y2="72" stroke="rgba(0,232,122,0.2)" stroke-width="1"/>
+        <line x1="225" y1="55" x2="175" y2="72" stroke="rgba(0,232,122,0.2)" stroke-width="1"/>
+        <circle cx="150" cy="110" r="5" fill="rgba(0,232,122,0.35)"/><circle cx="150" cy="135" r="5" fill="rgba(0,232,122,0.35)"/>
+      </svg>
+      <div class="cat-inner">
+        <div class="cat-top"><div class="cat-num">03</div><div class="cat-arrow">↗</div></div>
+        <div><div class="cat-sub">29 Styles</div><div class="cat-name">Outerwear</div></div>
+      </div>
+    </div>
+    <div class="cat reveal">
+      <svg class="cat-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        <rect width="300" height="300" fill="#060E08"/>
+        <path d="M95 40 L85 130 L72 255 L138 255 L150 175 L162 255 L228 255 L215 130 L205 40Z" fill="rgba(0,232,122,0.07)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+        <rect x="85" y="40" width="120" height="28" fill="rgba(0,232,122,0.12)" stroke="rgba(0,232,122,0.3)" stroke-width=".8"/>
+        <line x1="150" y1="68" x2="150" y2="172" stroke="rgba(0,232,122,0.1)" stroke-width="1"/>
+      </svg>
+      <div class="cat-inner">
+        <div class="cat-top"><div class="cat-num">04</div><div class="cat-arrow">↗</div></div>
+        <div><div class="cat-sub">35 Styles</div><div class="cat-name">Trousers</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section products-section">
+  <div class="prod-header">
+    <div><div class="sec-label reveal-l">Hand-picked</div><div class="sec-title reveal-l">Trending <strong>Now</strong></div></div>
+    <a href="#" class="cats-link reveal-r">View All →</a>
+  </div>
+  <div class="prod-grid">
+    <div class="prod-card reveal">
+      <div class="prod-img">
+        <span class="prod-badge">New</span><span class="prod-wish">♡</span>
+        <svg class="prod-svg" viewBox="0 0 260 346" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="346" fill="#060E08"/>
+          <path d="M75 55 L48 105 L72 115 L72 295 L188 295 L188 115 L212 105 L185 55 Q165 67 130 67 Q95 67 75 55Z" fill="rgba(0,232,122,0.09)" stroke="rgba(0,232,122,0.32)" stroke-width="1"/>
+          <path d="M92 55 Q130 43 168 55 L171 80 Q150 90 130 92 Q110 90 89 80Z" fill="rgba(0,232,122,0.2)" stroke="rgba(0,232,122,0.5)" stroke-width=".8"/>
+          <line x1="130" y1="95" x2="130" y2="290" stroke="rgba(0,232,122,0.1)" stroke-width="1"/>
+          <circle cx="130" cy="125" r="3" fill="rgba(0,232,122,0.4)"/><circle cx="130" cy="148" r="3" fill="rgba(0,232,122,0.4)"/><circle cx="130" cy="171" r="3" fill="rgba(0,232,122,0.4)"/>
+        </svg>
+        <div class="prod-overlay"><button class="prod-add">+ Quick Add</button></div>
+      </div>
+      <div class="prod-name">Signature Linen Shirt</div>
+      <div class="prod-cat">Men's Shirts</div>
+      <div class="prod-pricing"><span class="prod-price">₹2,199</span><span class="prod-old">₹2,999</span></div>
+    </div>
+    <div class="prod-card reveal">
+      <div class="prod-img">
+        <span class="prod-wish">♡</span>
+        <svg class="prod-svg" viewBox="0 0 260 346" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="346" fill="#060E08"/>
+          <path d="M72 42 L48 95 L70 103 L64 295 L196 295 L190 103 L212 95 L188 42 Q165 54 130 54 Q95 54 72 42Z" fill="rgba(0,232,122,0.08)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+          <path d="M90 42 Q130 30 170 42 L173 67 Q150 77 130 79 Q110 77 87 67Z" fill="rgba(0,232,122,0.15)" stroke="rgba(0,232,122,0.45)" stroke-width=".8"/>
+          <ellipse cx="130" cy="175" rx="42" ry="52" fill="none" stroke="rgba(0,232,122,0.07)" stroke-width="10"/>
+        </svg>
+        <div class="prod-overlay"><button class="prod-add">+ Quick Add</button></div>
+      </div>
+      <div class="prod-name">Midnight Co-ord Set</div>
+      <div class="prod-cat">Women's Sets</div>
+      <div class="prod-pricing"><span class="prod-price">₹3,499</span></div>
+    </div>
+    <div class="prod-card reveal">
+      <div class="prod-img">
+        <span class="prod-badge sale">Sale</span><span class="prod-wish">♡</span>
+        <svg class="prod-svg" viewBox="0 0 260 346" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="346" fill="#060E08"/>
+          <path d="M68 48 L42 108 L65 118 L58 295 L202 295 L195 118 L218 108 L192 48 Q168 62 130 62 Q92 62 68 48Z" fill="rgba(0,232,122,0.08)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+          <path d="M68 48 L100 66 L130 58 L160 66 L192 48" stroke="rgba(0,232,122,0.22)" stroke-width="1" fill="none"/>
+          <circle cx="130" cy="100" r="3.5" fill="rgba(0,232,122,0.35)"/><circle cx="130" cy="125" r="3.5" fill="rgba(0,232,122,0.35)"/>
+        </svg>
+        <div class="prod-overlay"><button class="prod-add">+ Quick Add</button></div>
+      </div>
+      <div class="prod-name">Classic Blazer</div>
+      <div class="prod-cat">Formal Wear</div>
+      <div class="prod-pricing"><span class="prod-price">₹4,199</span><span class="prod-old">₹5,999</span></div>
+    </div>
+    <div class="prod-card reveal">
+      <div class="prod-img">
+        <span class="prod-badge">Hot</span><span class="prod-wish">♡</span>
+        <svg class="prod-svg" viewBox="0 0 260 346" xmlns="http://www.w3.org/2000/svg">
+          <rect width="260" height="346" fill="#060E08"/>
+          <path d="M85 38 L72 130 L60 295 L132 295 L130 192 L128 295 L200 295 L188 130 L175 38Z" fill="rgba(0,232,122,0.08)" stroke="rgba(0,232,122,0.28)" stroke-width="1"/>
+          <rect x="85" y="38" width="90" height="28" fill="rgba(0,232,122,0.12)" stroke="rgba(0,232,122,0.3)" stroke-width=".8"/>
+          <line x1="130" y1="66" x2="130" y2="190" stroke="rgba(0,232,122,0.1)" stroke-width="1"/>
+        </svg>
+        <div class="prod-overlay"><button class="prod-add">+ Quick Add</button></div>
+      </div>
+      <div class="prod-name">Slim Fit Chinos</div>
+      <div class="prod-cat">Trousers</div>
+      <div class="prod-pricing"><span class="prod-price">₹1,899</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BANNER -->
+<div class="banner">
+  <div class="banner-content reveal-l">
+    <div class="banner-pill">Limited Edition Drop</div>
+    <h2 class="banner-h2">Built for the <em>Bold.</em><br>Designed to Last.</h2>
+    <p class="banner-p">Our signature Essentials line — 100% organic cotton, 12 versatile colourways, engineered for comfort from morning meetings to midnight outings.</p>
+    <div class="sizes-wrap">
+      <div class="sz on">XS</div><div class="sz">S</div><div class="sz">M</div><div class="sz">L</div><div class="sz">XL</div><div class="sz">XXL</div>
+    </div>
+    <a href="#" class="btn-g">Shop Essentials</a>
+  </div>
+  <div class="reveal-r">
+    <div class="cube-scene">
+      <div class="orbit-wrap">
+        <div class="orbit orbit1"><div class="orbit-dot"></div>
+          <div class="orbit orbit2"><div class="orbit-dot"></div></div>
+        </div>
+      </div>
+      <div class="cube">
+        <div class="face f-front"></div><div class="face f-back"></div>
+        <div class="face f-left"></div><div class="face f-right"></div>
+        <div class="face f-top"></div><div class="face f-bot"></div>
+      </div>
+      <div class="cube2" style="position:absolute;right:8%;top:12%">
+        <div class="face2 f2-front"></div><div class="face2 f2-back"></div>
+        <div class="face2 f2-left"></div><div class="face2 f2-right"></div>
+        <div class="face2 f2-top"></div><div class="face2 f2-bot"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="section testi-section">
+  <div class="sec-label reveal">Customer Stories</div>
+  <div class="sec-title reveal">Loved Across <strong>India</strong></div>
+  <div class="testi-grid">
+    <div class="testi reveal">
+      <div class="testi-q">"</div>
+      <p class="testi-body">The quality of the linen shirt is unreal for the price. It drapes perfectly and the stitching is impeccable. SNAR is the best discovery of 2026 for me.</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author"><div class="testi-av">AR</div><div><div class="testi-nm">Arun Rajan</div><div class="testi-loc">Chennai, Tamil Nadu</div></div></div>
+    </div>
+    <div class="testi reveal">
+      <div class="testi-q">"</div>
+      <p class="testi-body">Finally a brand that gets it — minimal, clean, modern. The co-ord set turned heads at every event. Delivery was faster than expected too!</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author"><div class="testi-av">PM</div><div><div class="testi-nm">Priya Mehta</div><div class="testi-loc">Bangalore, Karnataka</div></div></div>
+    </div>
+    <div class="testi reveal">
+      <div class="testi-q">"</div>
+      <p class="testi-body">The blazer is exactly what I needed — understated, premium, and versatile. Wore it to a client pitch and got compliments all day. Worth every rupee.</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author"><div class="testi-av">SK</div><div><div class="testi-nm">Sahil Kapoor</div><div class="testi-loc">Mumbai, Maharashtra</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <div class="nl-accent"></div>
+  <div class="reveal-l">
+    <h2 class="nl-h2">Get <em>15% off</em><br>your first order.</h2>
+    <p class="nl-sub">Join thousands of SNAR members. Early access, exclusive drops, and style edits — straight to your inbox.</p>
+  </div>
+  <div class="reveal-r">
+    <div class="nl-form">
+      <div class="nl-input-wrap">
+        <input class="nl-input" type="email" placeholder="Enter your email address">
+        <button class="nl-btn">Subscribe →</button>
+      </div>
+      <div class="nl-note">No spam. Unsubscribe anytime. We respect your privacy.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="fl-logo"><img src="logo.png" alt="SNAR Logo" style="height: 48px; object-fit: contain;"></div>
+      <p class="fl-desc">Premium clothing for the modern Indian wardrobe. Quality fabrics, contemporary design, honest pricing.</p>
+      <div class="fl-social">
+        <a href="#" class="fl-soc">ig</a><a href="#" class="fl-soc">fb</a><a href="#" class="fl-soc">tw</a><a href="#" class="fl-soc">yt</a>
+      </div>
+    </div>
+    <div class="fc"><h4>Shop</h4><ul><li><a href="#">Men's Clothing</a></li><li><a href="#">Women's Clothing</a></li><li><a href="#">Ethnic Wear</a></li><li><a href="#">Formal Wear</a></li><li><a href="#">New Arrivals</a></li><li><a href="#">Sale</a></li></ul></div>
+    <div class="fc"><h4>Help</h4><ul><li><a href="#">Size Guide</a></li><li><a href="#">Shipping Info</a></li><li><a href="#">Returns</a></li><li><a href="#">Track Order</a></li><li><a href="#">Contact Us</a></li><li><a href="#">FAQs</a></li></ul></div>
+    <div class="fc"><h4>Company</h4><ul><li><a href="#">About SNAR</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Careers</a></li><li><a href="#">Press</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul></div>
+  </div>
+  <div class="footer-bot">
+    <div class="footer-copy">© 2026 SNAR.com — All rights reserved.</div>
+    <div class="pays"><span class="pay">UPI</span><span class="pay">VISA</span><span class="pay">MC</span><span class="pay">RuPay</span><span class="pay">COD</span></div>
+  </div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),curR=document.getElementById('cur-r');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cur.style.transform=`translate(${mx-4}px,${my-4}px)`;
+});
+(function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;curR.style.transform=`translate(${rx-16}px,${ry-16}px)`;requestAnimationFrame(a)})();
+document.querySelectorAll('a,button,.cat,.prod-card,.sz').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{curR.style.width='52px';curR.style.height='52px'});
+  el.addEventListener('mouseleave',()=>{curR.style.width='32px';curR.style.height='32px'});
+});
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',window.scrollY>60);
+  document.querySelector('.hero-grid').style.transform=`translateY(${window.scrollY*.15}px)`;
+});
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const cls=e.target.className.split(' ')[0];
+      const siblings=Array.from(e.target.parentElement.children).filter(c=>c.classList.contains(cls));
+      const i=siblings.indexOf(e.target);
+      setTimeout(()=>e.target.classList.add('vis'),i*90);
+      ro.unobserve(e.target);
+    }
+  });
+},{threshold:.1});
+document.querySelectorAll('.reveal,.reveal-l,.reveal-r').forEach(el=>ro.observe(el));
+document.querySelectorAll('.sz').forEach(s=>{
+  s.addEventListener('click',()=>{document.querySelectorAll('.sz').forEach(x=>x.classList.remove('on'));s.classList.add('on')});
+});
+</script>
+</body>
+</html>
