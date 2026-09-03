@@ -1,21 +1,21 @@
-import React from "react";
-import Link from "next/link";
+import ProductGrid from "@/components/ProductGrid";
+import { listProductsByCategory } from "@/lib/data/products";
 
-export default function WomenPage() {
+export const metadata = {
+  title: "Women's Collection — SNAR",
+  description: "Premium performance sportswear for women.",
+};
+
+export default async function WomenPage() {
+  const products = await listProductsByCategory("women");
+
   return (
-    <div style={{ padding: "8rem 3.5rem", minHeight: "60vh", background: "var(--bg)" }}>
-      <div className="section-header" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
-        <h1 className="section-title">Women's Collection</h1>
-        <Link href="/" className="section-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: "rotate(180deg)", marginRight: "0.4rem" }}>
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>
-          </svg>
-          BACK TO HOME
-        </Link>
+    <div className="shop-page">
+      <div className="shop-header">
+        <div className="shop-eyebrow">Performance Sportswear</div>
+        <h1 className="shop-title">Women&apos;s <em>Collection</em></h1>
       </div>
-      <p style={{ marginTop: "2rem", color: "var(--off)" }}>
-        Explore our premium collection of performance sportswear designed for women.
-      </p>
+      <ProductGrid products={products} emptyMessage="Women's collection coming soon." />
     </div>
   );
 }

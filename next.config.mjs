@@ -2,6 +2,9 @@
 const nextConfig = {
   experimental: {
     viewTransition: true,
+    serverActions: {
+      bodySizeLimit: "8mb",
+    },
   },
 };
 

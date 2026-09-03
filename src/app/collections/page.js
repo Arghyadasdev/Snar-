@@ -1,21 +1,33 @@
-import React from "react";
 import Link from "next/link";
+import ProductGrid from "@/components/ProductGrid";
+import { listAllProducts, listCategories } from "@/lib/data/products";
 
-export default function CollectionsPage() {
+export const metadata = {
+  title: "Collections — SNAR",
+  description: "All SNAR collections.",
+};
+
+export default async function CollectionsPage() {
+  const [products, categories] = await Promise.all([listAllProducts(), listCategories()]);
+
   return (
-    <div style={{ padding: "8rem 3.5rem", minHeight: "60vh", background: "var(--bg)" }}>
-      <div className="section-header" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
-        <h1 className="section-title">All Collections</h1>
-        <Link href="/" className="section-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: "rotate(180deg)", marginRight: "0.4rem" }}>
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>
-          </svg>
-          BACK TO HOME
-        </Link>
+    <div className="shop-page">
+      <div className="shop-header">
+        <div className="shop-eyebrow">Curated Drops</div>
+        <h1 className="shop-title">All <em>Collections</em></h1>
       </div>
-      <p style={{ marginTop: "2rem", color: "var(--off)" }}>
-        Browse through our complete range of specialized sportswear collections.
-      </p>
+
+      {categories.length > 0 && (
+        <div className="category-filter-bar">
+          {categories.map((c) => (
+            <Link key={c.id} href={`/category/${c.slug}`} className="category-chip">
+              {c.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
+      <ProductGrid products={products} emptyMessage="No products yet — check back soon." />
     </div>
   );
 }

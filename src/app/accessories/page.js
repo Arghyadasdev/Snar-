@@ -1,21 +1,21 @@
-import React from "react";
-import Link from "next/link";
+import ProductGrid from "@/components/ProductGrid";
+import { listProductsByCategory } from "@/lib/data/products";
 
-export default function AccessoriesPage() {
+export const metadata = {
+  title: "Accessories — SNAR",
+  description: "Premium sportswear accessories.",
+};
+
+export default async function AccessoriesPage() {
+  const products = await listProductsByCategory("accessories");
+
   return (
-    <div style={{ padding: "8rem 3.5rem", minHeight: "60vh", background: "var(--bg)" }}>
-      <div className="section-header" style={{ borderBottom: "1px solid var(--border)", paddingBottom: "2rem" }}>
-        <h1 className="section-title">Accessories</h1>
-        <Link href="/" className="section-link">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: "rotate(180deg)", marginRight: "0.4rem" }}>
-            <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/>
-          </svg>
-          BACK TO HOME
-        </Link>
+    <div className="shop-page">
+      <div className="shop-header">
+        <div className="shop-eyebrow">Complete Your Kit</div>
+        <h1 className="shop-title"><em>Accessories</em></h1>
       </div>
-      <p style={{ marginTop: "2rem", color: "var(--off)" }}>
-        Complete your gear with our premium sportswear accessories.
-      </p>
+      <ProductGrid products={products} emptyMessage="Accessories coming soon." />
     </div>
   );
 }

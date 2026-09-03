@@ -9,16 +9,21 @@ export const metadata = {
   },
 };
 
-import Navbar from "@/components/Navbar";
-import BottomNavBar from "@/components/ui/bottom-nav-bar";
+import SiteChrome from "@/components/SiteChrome";
+import { getCurrentUser } from "@/lib/auth/dal";
+import { getCartCount } from "@/lib/data/cart";
+import { getSiteSettings } from "@/lib/data/site-settings";
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const [user, settings] = await Promise.all([getCurrentUser(), getSiteSettings()]);
+  const cartCount = user ? await getCartCount() : 0;
+
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <Navbar />
-        {children}
-        <BottomNavBar />
+        <SiteChrome isLoggedIn={!!user} cartCount={cartCount} settings={settings}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );

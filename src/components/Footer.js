@@ -9,10 +9,17 @@ export default function Footer() {
           <div className="fl-logo"><img src="/logo.png" alt="SNAR"/></div>
           <p>SNAR sportswear is built to push your limits and ignite your edge. Every product is a step towards stronger, better you.</p>
           <div className="fl-social">
-            <Link href="#" className="fl-soc">ig</Link>
-            <Link href="#" className="fl-soc">fb</Link>
+            <a href="https://www.instagram.com/snarindia?igsh=MTBsanM0OGgydXJyYw%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="fl-soc">ig</a>
+            <a href="https://www.facebook.com/share/1Ku37nYEQW/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="fl-soc">fb</a>
+            <a href="https://wa.me/919875607634" target="_blank" rel="noopener noreferrer" className="fl-soc">wa</a>
             <Link href="#" className="fl-soc">yt</Link>
             <Link href="#" className="fl-soc">tw</Link>
+          </div>
+          <div style={{ marginTop: "1.5rem" }}>
+            <p style={{ fontSize: "0.85rem", color: "var(--muted)", marginBottom: "0.5rem", fontWeight: "600" }}>Contact Us:</p>
+            <a href="mailto:info@snar.co.in" style={{ display: "block", fontSize: "0.9rem", color: "var(--foreground)", textDecoration: "none", marginBottom: "0.25rem" }}>info@snar.co.in</a>
+            <a href="mailto:marketing@snar.co.in" style={{ display: "block", fontSize: "0.9rem", color: "var(--foreground)", textDecoration: "none", marginBottom: "0.25rem" }}>marketing@snar.co.in</a>
+            <a href="mailto:finance@snar.co.in" style={{ display: "block", fontSize: "0.9rem", color: "var(--foreground)", textDecoration: "none" }}>finance@snar.co.in</a>
           </div>
         </div>
         <div className="footer-col">
