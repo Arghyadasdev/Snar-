@@ -14,7 +14,7 @@ export default function ProductGallery({ productId, images }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: ".7rem", marginBottom: "1rem" }}>
           {images.map((img) => (
             <div key={img.id} style={{ position: "relative" }}>
-              <img src={img.image_url} alt="" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" }} />
+              <img src={img.image_url} alt="" loading="lazy" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" }} />
               <form action={deleteProductImage} style={{ position: "absolute", top: "-6px", right: "-6px" }}>
                 <input type="hidden" name="id" value={img.id} />
                 <input type="hidden" name="productId" value={productId} />

@@ -189,7 +189,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
         <div className="cats-editorial">
           {/* Featured — Tracksuits */}
           <a href="#" className="cat-featured">
-            <img src={CATEGORIES[0].image} alt={CATEGORIES[0].name} className="cat-ed-img"/>
+            <img src={CATEGORIES[0].image} alt={CATEGORIES[0].name} className="cat-ed-img" loading="lazy"/>
             <div className="cat-ed-overlay"/>
             <div className="cat-ed-body">
               <span className="cat-ed-num">01</span>
@@ -207,7 +207,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
           <div className="cats-sub-grid">
             {CATEGORIES.slice(1).map((cat, i) => (
               <a key={cat.name} href="#" className="cat-sub">
-                <img src={cat.image} alt={cat.name} className="cat-ed-img"/>
+                <img src={cat.image} alt={cat.name} className="cat-ed-img" loading="lazy"/>
                 <div className="cat-ed-overlay"/>
                 <div className="cat-sub-body">
                   <span className="cat-ed-num">0{i + 2}</span>

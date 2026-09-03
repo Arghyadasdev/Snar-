@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { listAllProductsAdmin, deleteProduct } from "@/lib/actions/admin-products";
+import AdminSearchBar from "@/components/admin/AdminSearchBar";
 
 export const metadata = { title: "Admin · Products — SNAR" };
 
-export default async function AdminProductsPage() {
-  const products = await listAllProductsAdmin();
+export default async function AdminProductsPage({ searchParams }) {
+  const params = await searchParams;
+  const query = params?.q || "";
+  const products = await listAllProductsAdmin(query);
 
   return (
     <div className="shop-page">
@@ -16,10 +19,13 @@ export default async function AdminProductsPage() {
         <Link href="/admin/products/new" className="btn-primary">NEW PRODUCT</Link>
       </div>
 
+      <AdminSearchBar action="/admin/products" placeholder="Search products by name…" query={query} exportHref="/admin/products/export" />
+
       <div className="admin-table">
+        {products.length === 0 && <p className="empty-state">No products found.</p>}
         {products.map((p) => (
           <div key={p.id} className="admin-table-row">
-            <img src={p.image_url} alt={p.name} className="admin-table-img" />
+            <img src={p.image_url} alt={p.name} className="admin-table-img" loading="lazy" />
             <div className="admin-table-name">
               {p.name}
               {!p.is_active && <span className="order-status order-status-cancelled" style={{ marginLeft: ".5rem" }}>hidden</span>}

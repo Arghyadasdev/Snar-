@@ -4,12 +4,14 @@ import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 const STATUS_ORDER = ["pending", "processing", "shipped", "delivered", "cancelled"];
+const LOW_STOCK_THRESHOLD = 10;
 
-export async function getAdminStats() {
+export async function getAdminStats(rangeDays = 7) {
   await requireAdmin();
   const admin = createAdminClient();
+  const days = [7, 30, 90].includes(Number(rangeDays)) ? Number(rangeDays) : 7;
 
-  const [{ count: productCount }, { count: customerCount }, { data: orders }, { data: orderItems }] =
+  const [{ count: productCount }, { count: customerCount }, { data: orders }, { data: orderItems }, { data: lowStock }] =
     await Promise.all([
       admin.from("products").select("id", { count: "exact", head: true }),
       admin.from("profiles").select("id", { count: "exact", head: true }),
@@ -18,24 +20,32 @@ export async function getAdminStats() {
         .select("id, status, total, shipping_name, created_at")
         .order("created_at", { ascending: false }),
       admin.from("order_items").select("product_name, quantity, unit_price"),
+      admin
+        .from("products")
+        .select("id, name, stock, image_url")
+        .lte("stock", LOW_STOCK_THRESHOLD)
+        .eq("is_active", true)
+        .order("stock", { ascending: true })
+        .limit(10),
     ]);
 
   const allOrders = orders || [];
   const revenue = allOrders.reduce((sum, o) => sum + Number(o.total), 0);
   const pendingCount = allOrders.filter((o) => o.status === "pending").length;
+  const avgOrderValue = allOrders.length > 0 ? revenue / allOrders.length : 0;
 
   const statusBreakdown = STATUS_ORDER.map((status) => ({
     status,
     count: allOrders.filter((o) => o.status === status).length,
   }));
 
-  // last 7 days, oldest -> newest
-  const days = Array.from({ length: 7 }, (_, i) => {
+  // oldest -> newest, over the selected range
+  const rangeDates = Array.from({ length: days }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
+    d.setDate(d.getDate() - (days - 1 - i));
     return d.toISOString().slice(0, 10);
   });
-  const salesOverview = days.map((day) => ({
+  const salesOverview = rangeDates.map((day) => ({
     day,
     total: allOrders
       .filter((o) => o.created_at.slice(0, 10) === day)
@@ -59,9 +69,12 @@ export async function getAdminStats() {
     customerCount: customerCount || 0,
     pendingCount,
     revenue,
+    avgOrderValue,
     statusBreakdown,
     salesOverview,
     recentOrders,
     topProducts,
+    lowStock: lowStock || [],
+    rangeDays: days,
   };
 }

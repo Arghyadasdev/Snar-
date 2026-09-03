@@ -28,7 +28,7 @@ export default async function CartPage() {
           <div className="cart-items">
             {items.map((item) => (
               <div key={item.id} className="cart-item-row">
-                <img src={item.product.image_url} alt={item.product.name} className="cart-item-img" />
+                <img src={item.product.image_url} alt={item.product.name} className="cart-item-img" loading="lazy" />
                 <div className="cart-item-info">
                   <Link href={`/product/${item.product.slug}`} className="cart-item-name">{item.product.name}</Link>
                   <div className="cart-item-meta">Size {item.size || "—"}</div>

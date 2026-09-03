@@ -4,13 +4,19 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export async function listAllOrdersAdmin() {
+export async function listAllOrdersAdmin(search = "") {
   await requireAdmin();
   const admin = createAdminClient();
-  const { data } = await admin
+  let query = admin
     .from("orders")
     .select("id, status, total, created_at, shipping_name")
     .order("created_at", { ascending: false });
+
+  if (search.trim()) {
+    query = query.ilike("shipping_name", `%${search.trim()}%`);
+  }
+
+  const { data } = await query;
   return data || [];
 }
 

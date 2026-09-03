@@ -25,6 +25,7 @@ export default function SalesChart({ data }) {
 
   const path = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`).join(" ");
   const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => Math.round(max * f));
+  const labelEvery = Math.max(1, Math.ceil(data.length / 8));
 
   return (
     <div className="sales-chart-wrap">
@@ -54,10 +55,12 @@ export default function SalesChart({ data }) {
               onMouseEnter={() => setHover(i)}
               onMouseLeave={() => setHover(null)}
             />
-            <circle cx={p.x} cy={p.y} r={hover === i ? 5 : 3.5} fill="#fff" stroke="var(--ac)" strokeWidth="2" pointerEvents="none" />
-            <text x={p.x} y={HEIGHT - 8} textAnchor="middle" fontSize="10" fill="var(--a-muted)">
-              {new Date(p.day).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
-            </text>
+            <circle cx={p.x} cy={p.y} r={hover === i ? 5 : data.length > 20 ? 0 : 3.5} fill="#fff" stroke="var(--ac)" strokeWidth="2" pointerEvents="none" />
+            {i % labelEvery === 0 && (
+              <text x={p.x} y={HEIGHT - 8} textAnchor="middle" fontSize="10" fill="var(--a-muted)">
+                {new Date(p.day).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+              </text>
+            )}
           </g>
         ))}
       </svg>

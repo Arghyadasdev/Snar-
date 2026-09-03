@@ -4,13 +4,19 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export async function listCustomersAdmin() {
+export async function listCustomersAdmin(search = "") {
   await requireAdmin();
   const admin = createAdminClient();
-  const { data } = await admin
+  let query = admin
     .from("profiles")
     .select("id, email, full_name, role, created_at")
     .order("created_at", { ascending: false });
+
+  if (search.trim()) {
+    query = query.or(`full_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+  }
+
+  const { data } = await query;
   return data || [];
 }
 

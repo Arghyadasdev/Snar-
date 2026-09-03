@@ -25,7 +25,7 @@ export default function ProductGalleryView({ images, productName }) {
               }}
               aria-label={`View photo ${i + 1}`}
             >
-              <img src={src} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
             </button>
           ))}
         </div>

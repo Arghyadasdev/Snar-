@@ -6,13 +6,19 @@ import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadProductImage } from "@/lib/cloudinary";
 
-export async function listAllProductsAdmin() {
+export async function listAllProductsAdmin(search = "") {
   await requireAdmin();
   const admin = createAdminClient();
-  const { data } = await admin
+  let query = admin
     .from("products")
     .select("id, slug, name, price, image_url, is_active, category:categories(name)")
     .order("created_at", { ascending: false });
+
+  if (search.trim()) {
+    query = query.ilike("name", `%${search.trim()}%`);
+  }
+
+  const { data } = await query;
   return data || [];
 }
 
