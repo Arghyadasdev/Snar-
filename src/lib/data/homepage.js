@@ -1,8 +1,8 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export async function getActiveBanners() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("banners")
     .select("*")
@@ -12,7 +12,7 @@ export async function getActiveBanners() {
 }
 
 export async function getActiveMarqueeItems() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("marquee_items")
     .select("id, text")

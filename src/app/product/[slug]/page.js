@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
-import { getProductBySlug } from "@/lib/data/products";
+import { getProductBySlug, getProductImages } from "@/lib/data/products";
 import { getSiteSettings } from "@/lib/data/site-settings";
 import ProductActions from "./product-actions";
+import ProductGalleryView from "./product-gallery-view";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -14,15 +15,16 @@ export default async function ProductPage({ params }) {
   const [product, settings] = await Promise.all([getProductBySlug(slug), getSiteSettings()]);
   if (!product) notFound();
 
+  const extraImages = await getProductImages(product.id);
+  const images = [product.image_url, ...extraImages.map((i) => i.image_url)];
+
   const onSale = product.compare_at_price && product.compare_at_price > product.price;
   const sizes = Array.isArray(product.sizes) ? product.sizes : [];
 
   return (
     <div className="shop-page">
       <div className="product-detail-grid">
-        <div className="product-detail-img-wrap">
-          <img src={product.image_url} alt={product.name} className="product-detail-img" />
-        </div>
+        <ProductGalleryView images={images} productName={product.name} />
 
         <div className="product-detail-info">
           <div className="shop-eyebrow">{product.category?.name}</div>

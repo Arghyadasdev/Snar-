@@ -1,5 +1,5 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 const DEFAULTS = {
   whatsapp_number: "919875607634",
@@ -10,13 +10,13 @@ const DEFAULTS = {
 };
 
 export async function getSiteSettings() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase.from("site_settings").select("*").eq("id", 1).single();
   return data || DEFAULTS;
 }
 
 export async function getActiveTestimonials() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("testimonials")
     .select("*")
@@ -26,13 +26,13 @@ export async function getActiveTestimonials() {
 }
 
 export async function getSiteStats() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase.from("site_stats").select("slot, num, label");
   return data || [];
 }
 
 export async function getActiveFaqs() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("faqs")
     .select("id, question, answer")

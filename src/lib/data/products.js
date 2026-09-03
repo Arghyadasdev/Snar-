@@ -1,8 +1,8 @@
 import "server-only";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 
 export async function listCategories() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("categories")
     .select("id, slug, name, parent_id")
@@ -12,7 +12,7 @@ export async function listCategories() {
 }
 
 export async function listSubcategories(parentSlug) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("categories")
     .select("id, slug, name, parent:categories!parent_id(slug)")
@@ -22,7 +22,7 @@ export async function listSubcategories(parentSlug) {
 }
 
 export async function getCategoryBySlug(slug) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("categories")
     .select("id, slug, name, parent_id, parent:categories!parent_id(slug, name)")
@@ -32,7 +32,7 @@ export async function getCategoryBySlug(slug) {
 }
 
 export async function listProductsByCategory(categorySlug) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
     .select("id, slug, name, price, compare_at_price, image_url, category:categories!inner(slug, name)")
@@ -46,7 +46,7 @@ export async function listProductsByCategory(categorySlug) {
 // For a parent category (e.g. "Sportswear"): products in the parent itself
 // plus products in any of its sub-categories.
 export async function listProductsByCategoryTree(categorySlug) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
 
   const { data: category } = await supabase
     .from("categories")
@@ -73,7 +73,7 @@ export async function listProductsByCategoryTree(categorySlug) {
 }
 
 export async function listAllProducts() {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
     .select("id, slug, name, price, compare_at_price, image_url, category:categories(slug, name)")
@@ -82,8 +82,18 @@ export async function listAllProducts() {
   return data || [];
 }
 
+export async function getProductImages(productId) {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("product_images")
+    .select("id, image_url")
+    .eq("product_id", productId)
+    .order("sort_order", { ascending: true });
+  return data || [];
+}
+
 export async function getProductBySlug(slug) {
-  const supabase = await createClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("products")
     .select(
