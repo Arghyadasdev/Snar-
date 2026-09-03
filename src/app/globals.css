@@ -528,6 +528,24 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .product-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start}
 .product-detail-img-wrap{background:var(--surface);border-radius:16px;overflow:hidden;aspect-ratio:1/1}
 .product-detail-img{width:100%;height:100%;object-fit:cover}
+
+.pg-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.pg-tile{position:relative;aspect-ratio:1/1;border-radius:10px;overflow:hidden;background:var(--surface);border:none;padding:0;cursor:pointer}
+.pg-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.pg-tile:hover img{transform:scale(1.04)}
+.pg-more{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.04em}
+
+.pg-lightbox{position:fixed;inset:0;z-index:1000;background:rgba(5,5,10,.92);display:flex;align-items:center;justify-content:center;cursor:zoom-out;padding:2rem}
+.pg-lightbox-img{max-width:min(90vw,900px);max-height:85vh;object-fit:contain;border-radius:8px;cursor:default}
+.pg-lightbox-close{position:absolute;top:1.2rem;right:1.5rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:1.4rem;line-height:1;cursor:pointer}
+.pg-lightbox-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.6rem;line-height:1;cursor:pointer}
+.pg-lightbox-prev{left:1.5rem}
+.pg-lightbox-next{right:1.5rem}
+@media (max-width:640px){
+  .pg-lightbox-arrow{width:36px;height:36px;font-size:1.3rem}
+  .pg-lightbox-prev{left:.5rem}
+  .pg-lightbox-next{right:.5rem}
+}
 .product-detail-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,3.5vw,3rem);letter-spacing:.02em;margin:.6rem 0 1rem;text-transform:uppercase}
 .product-detail-price{display:flex;align-items:center;gap:.8rem;font-size:1.4rem;font-weight:700;color:var(--ac);margin-bottom:1.4rem}
 .product-detail-desc{color:var(--off);line-height:1.7;font-size:.92rem;max-width:44ch}
@@ -555,6 +573,11 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .auth-btn:disabled{opacity:.6;cursor:default}
 .auth-switch{margin-top:1.4rem;font-size:.82rem;color:var(--muted);text-align:center}
 .auth-switch a{color:var(--ac);text-decoration:none}
+.form-row-2,.form-row-3{display:flex;gap:1rem}
+.form-row-2>*,.form-row-3>*{flex:1;min-width:0}
+@media (max-width:480px){
+  .form-row-2,.form-row-3{flex-direction:column;gap:0}
+}
 
 /* ============ ACCOUNT ============ */
 .account-links{display:flex;flex-direction:column;gap:.8rem;margin-bottom:2rem;max-width:420px}
@@ -743,6 +766,14 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
   .admin-sidebar-nav{flex-direction:row}
   .admin-sidebar-foot{display:none}
   .admin-dash-grid{grid-template-columns:1fr}
-  .admin-recent-row{grid-template-columns:70px 1fr 70px}
+  .admin-recent-row{grid-template-columns:55px 1fr 65px 75px;gap:.5rem;font-size:.74rem}
   .admin-recent-date{display:none}
+  .admin-topbar{padding:1rem 1.2rem}
+  .admin-content{padding:1.2rem 1.2rem 2rem}
+  .admin-kpi-card{padding:1rem 1.1rem}
+}
+
+@media (max-width:480px){
+  .admin-topbar-who{display:none}
+  .admin-panel-title-row{flex-wrap:wrap;gap:.6rem}
 }

@@ -11,7 +11,7 @@ export default function CouponForm() {
       <label className="auth-label" htmlFor="code">Code</label>
       <input className="auth-input" id="code" name="code" style={{ textTransform: "uppercase" }} placeholder="WELCOME10" required />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-2">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="discountType">Type</label>
           <select className="auth-input" id="discountType" name="discountType" defaultValue="percent">
@@ -25,7 +25,7 @@ export default function CouponForm() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-2">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="minOrderAmount">Min Order Amount (₹)</label>
           <input className="auth-input" id="minOrderAmount" name="minOrderAmount" type="number" step="0.01" defaultValue={0} />

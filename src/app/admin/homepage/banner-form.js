@@ -19,7 +19,7 @@ export default function BannerForm({ action, banner }) {
       <label className="auth-label" htmlFor="eyebrow">Eyebrow (small label above headline)</label>
       <input className="auth-input" id="eyebrow" name="eyebrow" defaultValue={banner?.eyebrow} placeholder="PREMIUM SPORTSWEAR" />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="headlineLine1">Headline Line 1</label>
           <input className="auth-input" id="headlineLine1" name="headlineLine1" defaultValue={banner?.headline_line1} required />
@@ -37,7 +37,7 @@ export default function BannerForm({ action, banner }) {
       <label className="auth-label" htmlFor="subtitle">Subtitle</label>
       <input className="auth-input" id="subtitle" name="subtitle" defaultValue={banner?.subtitle} />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="cta1Label">Button 1 Label</label>
           <input className="auth-input" id="cta1Label" name="cta1Label" defaultValue={banner?.cta1_label || "SHOP NOW"} />
@@ -47,7 +47,7 @@ export default function BannerForm({ action, banner }) {
           <input className="auth-input" id="cta1Href" name="cta1Href" defaultValue={banner?.cta1_href || "/collections"} />
         </div>
       </div>
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="cta2Label">Button 2 Label (optional)</label>
           <input className="auth-input" id="cta2Label" name="cta2Label" defaultValue={banner?.cta2_label} />

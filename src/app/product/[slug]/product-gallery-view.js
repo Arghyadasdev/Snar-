@@ -2,34 +2,55 @@
 
 import { useState } from "react";
 
+const GRID_LIMIT = 5;
+
 export default function ProductGalleryView({ images, productName }) {
-  const [active, setActive] = useState(0);
+  const [lightbox, setLightbox] = useState(null); // index or null
+
+  const visible = images.slice(0, GRID_LIMIT);
+  const extraCount = images.length - GRID_LIMIT;
+
+  function next(e) {
+    e.stopPropagation();
+    setLightbox((i) => (i + 1) % images.length);
+  }
+  function prev(e) {
+    e.stopPropagation();
+    setLightbox((i) => (i - 1 + images.length) % images.length);
+  }
 
   return (
-    <div>
-      <div className="product-detail-img-wrap">
-        <img src={images[active]} alt={productName} className="product-detail-img" />
-      </div>
-
-      {images.length > 1 && (
-        <div style={{ display: "flex", gap: ".6rem", marginTop: ".8rem" }}>
-          {images.map((src, i) => (
+    <>
+      <div className="pg-grid">
+        {visible.map((src, i) => {
+          const isLastVisible = i === GRID_LIMIT - 1 && extraCount > 0;
+          return (
             <button
               key={src + i}
               type="button"
-              onClick={() => setActive(i)}
-              style={{
-                width: "64px", height: "64px", borderRadius: "8px", overflow: "hidden",
-                border: i === active ? "2px solid var(--ac)" : "2px solid transparent",
-                padding: 0, cursor: "pointer", flexShrink: 0, background: "var(--bg2)",
-              }}
+              className="pg-tile"
+              onClick={() => setLightbox(i)}
               aria-label={`View photo ${i + 1}`}
             >
-              <img src={src} alt="" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img src={src} alt={i === 0 ? productName : ""} loading={i < 2 ? "eager" : "lazy"} />
+              {isLastVisible && <span className="pg-more">+{extraCount}</span>}
             </button>
-          ))}
+          );
+        })}
+      </div>
+
+      {lightbox !== null && (
+        <div className="pg-lightbox" onClick={() => setLightbox(null)}>
+          <button type="button" className="pg-lightbox-close" onClick={() => setLightbox(null)} aria-label="Close">×</button>
+          {images.length > 1 && (
+            <button type="button" className="pg-lightbox-arrow pg-lightbox-prev" onClick={prev} aria-label="Previous photo">‹</button>
+          )}
+          <img src={images[lightbox]} alt={productName} className="pg-lightbox-img" onClick={(e) => e.stopPropagation()} />
+          {images.length > 1 && (
+            <button type="button" className="pg-lightbox-arrow pg-lightbox-next" onClick={next} aria-label="Next photo">›</button>
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }

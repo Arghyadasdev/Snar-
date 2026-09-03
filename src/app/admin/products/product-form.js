@@ -21,7 +21,7 @@ export default function ProductForm({ action, categories, product }) {
       <label className="auth-label" htmlFor="description">Description</label>
       <textarea className="auth-input" id="description" name="description" rows={3} defaultValue={product?.description} />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-2">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="price">Price (₹)</label>
           <input className="auth-input" id="price" name="price" type="number" step="0.01" defaultValue={product?.price} required />

@@ -12,7 +12,7 @@ export default function TestimonialForm({ action, testimonial }) {
       <label className="auth-label" htmlFor="quote">Quote</label>
       <textarea className="auth-input" id="quote" name="quote" rows={3} defaultValue={testimonial?.quote} required />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="name">Name</label>
           <input className="auth-input" id="name" name="name" defaultValue={testimonial?.name} required />
@@ -23,7 +23,7 @@ export default function TestimonialForm({ action, testimonial }) {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="role">Role</label>
           <input className="auth-input" id="role" name="role" defaultValue={testimonial?.role} placeholder="Marathon Runner" />
@@ -34,7 +34,7 @@ export default function TestimonialForm({ action, testimonial }) {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: "1rem" }}>
+      <div className="form-row-3">
         <div style={{ flex: 1 }}>
           <label className="auth-label" htmlFor="product">Product</label>
           <input className="auth-input" id="product" name="product" defaultValue={testimonial?.product} />

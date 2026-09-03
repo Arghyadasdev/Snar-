@@ -19,16 +19,16 @@ export default function CheckoutForm() {
       <label className="auth-label" htmlFor="address">Address</label>
       <input className="auth-input" id="address" name="address" required />
 
-      <div style={{ display: "flex", gap: "1rem" }}>
-        <div style={{ flex: 1 }}>
+      <div className="form-row-3">
+        <div>
           <label className="auth-label" htmlFor="city">City</label>
           <input className="auth-input" id="city" name="city" required />
         </div>
-        <div style={{ flex: 1 }}>
+        <div>
           <label className="auth-label" htmlFor="state">State</label>
           <input className="auth-input" id="state" name="state" required />
         </div>
-        <div style={{ flex: 1 }}>
+        <div>
           <label className="auth-label" htmlFor="zip">ZIP</label>
           <input className="auth-input" id="zip" name="zip" required />
         </div>
