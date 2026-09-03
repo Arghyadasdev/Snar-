@@ -79,6 +79,27 @@ export async function login(prevState, formData) {
   redirect(next);
 }
 
+export async function changeMyPassword(prevState, formData) {
+  const newPassword = formData.get("newPassword")?.toString();
+  const confirmPassword = formData.get("confirmPassword")?.toString();
+
+  if (!newPassword || newPassword.length < 8) {
+    return { error: "New password must be at least 8 characters." };
+  }
+  if (newPassword !== confirmPassword) {
+    return { error: "Passwords don't match." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password updated." };
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();

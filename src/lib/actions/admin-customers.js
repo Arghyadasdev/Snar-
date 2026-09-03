@@ -28,3 +28,21 @@ export async function setCustomerRole(formData) {
 
   revalidatePath("/admin/customers");
 }
+
+export async function resetCustomerPassword(prevState, formData) {
+  await requireAdmin();
+  const id = formData.get("id")?.toString();
+  const newPassword = formData.get("newPassword")?.toString();
+
+  if (!newPassword || newPassword.length < 8) {
+    return { error: "Password must be at least 8 characters." };
+  }
+
+  const admin = createAdminClient();
+  const { error } = await admin.auth.admin.updateUserById(id, { password: newPassword });
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password reset." };
+}

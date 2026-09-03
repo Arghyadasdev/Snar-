@@ -1,6 +1,7 @@
 import { listCustomersAdmin } from "@/lib/actions/admin-customers";
 import { getCurrentUser } from "@/lib/auth/dal";
 import RoleSelect from "./role-select";
+import ResetPasswordButton from "./reset-password-button";
 
 export const metadata = { title: "Admin · Customers — SNAR" };
 
@@ -19,7 +20,10 @@ export default async function AdminCustomersPage() {
           <div key={c.id} className="admin-table-row admin-table-row-cat">
             <div className="admin-table-name">{c.full_name || "—"}</div>
             <div className="admin-table-cat">{c.email}</div>
-            <RoleSelect customerId={c.id} role={c.role} isSelf={c.id === currentUser?.id} />
+            <div style={{ display: "flex", alignItems: "center", gap: ".8rem" }}>
+              <RoleSelect customerId={c.id} role={c.role} isSelf={c.id === currentUser?.id} />
+              <ResetPasswordButton customerId={c.id} />
+            </div>
           </div>
         ))}
       </div>

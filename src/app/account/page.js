@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser, getCurrentProfile } from "@/lib/auth/dal";
 import { logout } from "@/lib/actions/auth";
+import ChangePasswordForm from "./change-password-form";
 
 export const metadata = { title: "My Account — SNAR" };
 
@@ -28,6 +29,8 @@ export default async function AccountPage() {
           </Link>
         )}
       </div>
+
+      <ChangePasswordForm />
 
       <form action={logout}>
         <button className="btn-outline" type="submit">Log Out</button>
