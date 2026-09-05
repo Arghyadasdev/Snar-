@@ -4,6 +4,13 @@
 -- code doesn't match any row. Rewritten to use FOUND + plain scalar
 -- variables instead of touching record fields outside a guarded branch.
 
+-- Also defensively ensures these columns exist: on the live DB, seed-advanced.sql's
+-- ALTER TABLE for discount_amount/coupon_code had not actually been applied,
+-- which made every place_paid_order call fail with "column discount_amount
+-- of relation orders does not exist" and silently drop every paid order.
+alter table public.orders add column if not exists discount_amount numeric(10,2) not null default 0;
+alter table public.orders add column if not exists coupon_code text;
+
 create or replace function public.place_paid_order(
   p_shipping jsonb,
   p_coupon_code text,

@@ -77,6 +77,7 @@ export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderI
   });
 
   if (error) {
+    console.error("place_paid_order RPC failed:", error.message);
     return { error: "Payment succeeded but we couldn't save your order. Contact support with your payment ID: " + razorpayPaymentId };
   }
 
