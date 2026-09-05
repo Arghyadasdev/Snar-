@@ -33,6 +33,13 @@ export async function addToCart(formData) {
   const user = await requireUser(redirectTo);
   const supabase = await createClient();
 
+  const { data: product } = await supabase
+    .from("products")
+    .select("stock")
+    .eq("id", productId)
+    .limit(1);
+  const stock = product?.[0]?.stock ?? 0;
+
   const { data: existing } = await supabase
     .from("cart_items")
     .select("id, quantity")
@@ -42,11 +49,14 @@ export async function addToCart(formData) {
     .maybeSingle();
 
   if (existing) {
-    await supabase
-      .from("cart_items")
-      .update({ quantity: existing.quantity + 1 })
-      .eq("id", existing.id);
-  } else {
+    const nextQuantity = Math.min(existing.quantity + 1, stock);
+    if (nextQuantity > 0) {
+      await supabase
+        .from("cart_items")
+        .update({ quantity: nextQuantity })
+        .eq("id", existing.id);
+    }
+  } else if (stock > 0) {
     await supabase
       .from("cart_items")
       .insert({ user_id: user.id, product_id: productId, size, quantity: 1 });
@@ -64,7 +74,19 @@ export async function updateCartItem(formData) {
   if (quantity <= 0) {
     await supabase.from("cart_items").delete().eq("id", id);
   } else {
-    await supabase.from("cart_items").update({ quantity }).eq("id", id);
+    const { data: item } = await supabase
+      .from("cart_items")
+      .select("product_id")
+      .eq("id", id)
+      .limit(1);
+    const { data: product } = await supabase
+      .from("products")
+      .select("stock")
+      .eq("id", item?.[0]?.product_id)
+      .limit(1);
+    const stock = product?.[0]?.stock ?? quantity;
+
+    await supabase.from("cart_items").update({ quantity: Math.min(quantity, stock) }).eq("id", id);
   }
 
   revalidatePath("/cart");

@@ -17,7 +17,7 @@ export async function getAdminStats(rangeDays = 7) {
       admin.from("profiles").select("id", { count: "exact", head: true }),
       admin
         .from("orders")
-        .select("id, status, total, shipping_name, created_at")
+        .select("id, status, total, shipping_name, created_at, payment_status")
         .order("created_at", { ascending: false }),
       admin.from("order_items").select("product_name, quantity, unit_price"),
       admin
@@ -30,9 +30,10 @@ export async function getAdminStats(rangeDays = 7) {
     ]);
 
   const allOrders = orders || [];
-  const revenue = allOrders.reduce((sum, o) => sum + Number(o.total), 0);
+  const paidOrders = allOrders.filter((o) => o.payment_status === "paid");
+  const revenue = paidOrders.reduce((sum, o) => sum + Number(o.total), 0);
   const pendingCount = allOrders.filter((o) => o.status === "pending").length;
-  const avgOrderValue = allOrders.length > 0 ? revenue / allOrders.length : 0;
+  const avgOrderValue = paidOrders.length > 0 ? revenue / paidOrders.length : 0;
 
   const statusBreakdown = STATUS_ORDER.map((status) => ({
     status,
@@ -47,7 +48,7 @@ export async function getAdminStats(rangeDays = 7) {
   });
   const salesOverview = rangeDates.map((day) => ({
     day,
-    total: allOrders
+    total: paidOrders
       .filter((o) => o.created_at.slice(0, 10) === day)
       .reduce((sum, o) => sum + Number(o.total), 0),
   }));
