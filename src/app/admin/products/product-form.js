@@ -56,6 +56,16 @@ export default function ProductForm({ action, categories, product }) {
       <label className="auth-label" htmlFor="stock">Stock</label>
       <input className="auth-input" id="stock" name="stock" type="number" defaultValue={product?.stock ?? 0} />
 
+      <label className="auth-label" htmlFor="specifications">Product Details (one per line, "Label: Value")</label>
+      <textarea
+        className="auth-input"
+        id="specifications"
+        name="specifications"
+        rows={4}
+        defaultValue={(product?.specifications || []).map((s) => `${s.label}: ${s.value}`).join("\n")}
+        placeholder={"Material: Polyester & Elastane\nFit: Regular\nCare: Machine wash cold"}
+      />
+
       <label className="auth-label" style={{ display: "flex", alignItems: "center", gap: ".5rem", marginTop: ".5rem" }}>
         <input type="checkbox" name="isActive" defaultChecked={product ? product.is_active : true} />
         Active (visible in store)

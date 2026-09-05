@@ -98,10 +98,25 @@ export async function getProductBySlug(slug) {
   const { data } = await supabase
     .from("products")
     .select(
-      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, category:categories(slug, name)"
+      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, specifications, category:categories(slug, name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
     .limit(1);
   return data?.[0] || null;
+}
+
+export async function getProductReviews(productId) {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("reviews")
+    .select("id, customer_name, rating, review_text, created_at")
+    .eq("product_id", productId)
+    .eq("is_approved", true)
+    .order("created_at", { ascending: false });
+
+  const reviews = data || [];
+  const count = reviews.length;
+  const average = count > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
+  return { reviews, average, count };
 }

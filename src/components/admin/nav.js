@@ -6,6 +6,7 @@ export const ADMIN_NAV = [
   { label: "Customers", href: "/admin/customers", icon: "users" },
   { label: "Homepage", href: "/admin/homepage", icon: "image" },
   { label: "Testimonials", href: "/admin/testimonials", icon: "star" },
+  { label: "Reviews", href: "/admin/reviews", icon: "star" },
   { label: "Coupons", href: "/admin/coupons", icon: "discount" },
   { label: "FAQs", href: "/admin/faqs", icon: "help" },
   { label: "Settings", href: "/admin/settings", icon: "settings" },

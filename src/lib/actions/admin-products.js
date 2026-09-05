@@ -50,8 +50,22 @@ function slugify(name) {
     .replace(/(^-|-$)/g, "");
 }
 
+function parseSpecifications(raw) {
+  return (raw || "")
+    .split("\n")
+    .map((line) => {
+      const idx = line.indexOf(":");
+      if (idx === -1) return null;
+      const label = line.slice(0, idx).trim();
+      const value = line.slice(idx + 1).trim();
+      return label && value ? { label, value } : null;
+    })
+    .filter(Boolean);
+}
+
 async function readProductForm(formData) {
   const sizesRaw = formData.get("sizes")?.toString() || "";
+  const specsRaw = formData.get("specifications")?.toString() || "";
 
   let imageUrl = formData.get("imageUrl")?.toString().trim() || "";
   const imageFile = formData.get("imageFile");
@@ -74,6 +88,7 @@ async function readProductForm(formData) {
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
+    specifications: parseSpecifications(specsRaw),
   };
 }
 
