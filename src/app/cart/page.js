@@ -10,7 +10,7 @@ export default async function CartPage() {
   const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
   const whatsappUrl = buildWhatsappOrderLink(
     settings.whatsapp_number,
-    items.map((i) => ({ name: i.product.name, size: i.size, quantity: i.quantity, price: i.product.price })),
+    items.map((i) => ({ name: i.product.name, size: i.size, color: i.variant?.color_name, quantity: i.quantity, price: i.product.price })),
     total
   );
 
@@ -28,10 +28,12 @@ export default async function CartPage() {
           <div className="cart-items">
             {items.map((item) => (
               <div key={item.id} className="cart-item-row">
-                <img src={item.product.image_url} alt={item.product.name} className="cart-item-img" loading="lazy" />
+                <img src={item.variant?.image_url || item.product.image_url} alt={item.product.name} className="cart-item-img" loading="lazy" />
                 <div className="cart-item-info">
                   <Link href={`/product/${item.product.slug}`} className="cart-item-name">{item.product.name}</Link>
-                  <div className="cart-item-meta">Size {item.size || "—"}</div>
+                  <div className="cart-item-meta">
+                    {item.variant?.color_name ? `${item.variant.color_name} · ` : ""}Size {item.size || "—"}
+                  </div>
                   <div className="cart-item-price">₹{Number(item.product.price).toFixed(2)}</div>
                 </div>
                 <form action={updateCartItem} className="cart-item-qty">

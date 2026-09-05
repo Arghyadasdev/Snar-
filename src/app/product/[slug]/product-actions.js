@@ -4,18 +4,19 @@ import { useState } from "react";
 import { addToCart } from "@/lib/data/cart";
 import { buildWhatsappOrderLink } from "@/lib/whatsapp";
 
-export default function ProductActions({ product, sizes, whatsappNumber }) {
+export default function ProductActions({ product, sizes, whatsappNumber, variantId, colorName }) {
   const [size, setSize] = useState(sizes[0] || "");
 
   const whatsappUrl = buildWhatsappOrderLink(
     whatsappNumber,
-    [{ name: product.name, size, quantity: 1, price: product.price }],
+    [{ name: product.name, size, color: colorName, quantity: 1, price: product.price }],
     product.price
   );
 
   return (
     <form action={addToCart} className="product-detail-form">
       <input type="hidden" name="productId" value={product.id} />
+      <input type="hidden" name="variantId" value={variantId || ""} />
       <input type="hidden" name="redirectTo" value={`/product/${product.slug}`} />
 
       {sizes.length > 0 && (

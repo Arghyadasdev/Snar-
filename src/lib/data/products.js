@@ -87,7 +87,17 @@ export async function getProductImages(productId) {
   const supabase = createPublicClient();
   const { data } = await supabase
     .from("product_images")
-    .select("id, image_url")
+    .select("id, image_url, variant_id")
+    .eq("product_id", productId)
+    .order("sort_order", { ascending: true });
+  return data || [];
+}
+
+export async function getProductVariants(productId) {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("product_variants")
+    .select("id, color_name, image_url, stock")
     .eq("product_id", productId)
     .order("sort_order", { ascending: true });
   return data || [];

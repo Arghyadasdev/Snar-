@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
-import { getProductBySlug, getProductImages, getProductReviews } from "@/lib/data/products";
+import { getProductBySlug, getProductImages, getProductReviews, getProductVariants } from "@/lib/data/products";
 import { getSiteSettings } from "@/lib/data/site-settings";
 import { getMyReview } from "@/lib/actions/reviews";
 import { getCurrentUser } from "@/lib/auth/dal";
-import ProductActions from "./product-actions";
-import ProductGalleryView from "./product-gallery-view";
+import ProductDetailClient from "./product-detail-client";
 import ReviewForm from "./review-form";
 
 export async function generateMetadata({ params }) {
@@ -18,49 +17,35 @@ export default async function ProductPage({ params }) {
   const [product, settings] = await Promise.all([getProductBySlug(slug), getSiteSettings()]);
   if (!product) notFound();
 
-  const extraImages = await getProductImages(product.id);
-  const images = [product.image_url, ...extraImages.map((i) => i.image_url)];
-
-  const onSale = product.compare_at_price && product.compare_at_price > product.price;
-  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
-  const specs = Array.isArray(product.specifications) ? product.specifications : [];
-
-  const [{ reviews, average, count }, user] = await Promise.all([
+  const [allImages, variants, { reviews, average, count }, user] = await Promise.all([
+    getProductImages(product.id),
+    getProductVariants(product.id),
     getProductReviews(product.id),
     getCurrentUser(),
   ]);
   const myReview = user ? await getMyReview(product.id) : null;
 
+  const baseImages = allImages.filter((i) => !i.variant_id).map((i) => i.image_url);
+  const imagesByVariant = {};
+  for (const img of allImages) {
+    if (!img.variant_id) continue;
+    (imagesByVariant[img.variant_id] ||= []).push(img.image_url);
+  }
+
+  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+  const specs = Array.isArray(product.specifications) ? product.specifications : [];
+
   return (
     <div className="shop-page">
-      <div className="product-detail-grid">
-        <ProductGalleryView images={images} productName={product.name} />
-
-        <div className="product-detail-info">
-          <div className="shop-eyebrow">{product.category?.name}</div>
-          <h1 className="product-detail-name">{product.name}</h1>
-
-          {count > 0 && (
-            <div className="product-detail-rating" style={{ color: "#ffb300", margin: ".3rem 0" }}>
-              {"★".repeat(Math.round(average))}
-              {"☆".repeat(5 - Math.round(average))}
-              <span style={{ color: "var(--muted, #999)", marginLeft: ".5rem", fontSize: ".85rem" }}>
-                {average.toFixed(1)} ({count} review{count === 1 ? "" : "s"})
-              </span>
-            </div>
-          )}
-
-          <div className="product-detail-price">
-            <span>₹{Number(product.price).toFixed(2)}</span>
-            {onSale && <span className="product-card-strike">₹{Number(product.compare_at_price).toFixed(2)}</span>}
-          </div>
-          <p className="product-detail-desc">{product.description}</p>
-
-          <ProductActions product={product} sizes={sizes} whatsappNumber={settings.whatsapp_number} />
-
-          <div className="product-detail-stock">{product.stock > 0 ? "In stock" : "Out of stock"}</div>
-        </div>
-      </div>
+      <ProductDetailClient
+        product={product}
+        variants={variants}
+        baseImages={baseImages}
+        imagesByVariant={imagesByVariant}
+        sizes={sizes}
+        whatsappNumber={settings.whatsapp_number}
+        rating={{ average, count }}
+      />
 
       {specs.length > 0 && (
         <div className="product-detail-specs" style={{ marginTop: "3rem", maxWidth: "700px" }}>

@@ -24,7 +24,9 @@ export default async function OrderDetailPage({ params }) {
             <div key={item.id} className="order-item-row">
               <div>
                 <div className="order-item-name">{item.product_name}</div>
-                <div className="order-item-meta">Size {item.size || "—"} · Qty {item.quantity}</div>
+                <div className="order-item-meta">
+                  {item.color_name ? `${item.color_name} · ` : ""}Size {item.size || "—"} · Qty {item.quantity}
+                </div>
               </div>
               <div className="order-item-price">₹{(item.unit_price * item.quantity).toFixed(2)}</div>
             </div>

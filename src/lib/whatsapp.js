@@ -1,8 +1,8 @@
 export function buildWhatsappOrderLink(whatsappNumber, items, total) {
-  const lines = items.map(
-    (item, i) =>
-      `${i + 1}. ${item.name}${item.size ? ` (Size: ${item.size})` : ""} x${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}`
-  );
+  const lines = items.map((item, i) => {
+    const attrs = [item.color && `Color: ${item.color}`, item.size && `Size: ${item.size}`].filter(Boolean).join(", ");
+    return `${i + 1}. ${item.name}${attrs ? ` (${attrs})` : ""} x${item.quantity} - ₹${(item.price * item.quantity).toFixed(2)}`;
+  });
 
   const message = [
     "Hi SNAR! I'd like to order:",

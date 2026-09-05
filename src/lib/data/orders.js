@@ -20,7 +20,7 @@ export async function getOrder(orderId) {
   if (!order) return null;
   const { data: items } = await supabase
     .from("order_items")
-    .select("id, product_name, unit_price, quantity, size")
+    .select("id, product_name, unit_price, quantity, size, color_name")
     .eq("order_id", orderId);
   return { ...order, items: items || [] };
 }

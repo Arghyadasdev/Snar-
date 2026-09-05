@@ -27,7 +27,7 @@ export async function getOrderAdmin(id) {
   if (!order) return null;
   const { data: items } = await admin
     .from("order_items")
-    .select("id, product_name, unit_price, quantity, size")
+    .select("id, product_name, unit_price, quantity, size, color_name")
     .eq("order_id", id);
   return { ...order, items: items || [] };
 }
