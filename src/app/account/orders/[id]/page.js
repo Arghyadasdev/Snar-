@@ -53,6 +53,15 @@ export default async function OrderDetailPage({ params }) {
           <p>{order.shipping_address}</p>
           <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip}</p>
           <p>{order.shipping_phone}</p>
+
+          <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Payment</div>
+          <p>
+            {order.razorpay_payment_id ? (
+              <span className="order-status order-status-delivered">Paid via Razorpay</span>
+            ) : (
+              <span className="order-status order-status-pending">{order.payment_status || "Unpaid"}</span>
+            )}
+          </p>
         </div>
       </div>
     </div>

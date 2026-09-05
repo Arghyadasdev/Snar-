@@ -53,6 +53,20 @@ export default async function AdminOrderDetailPage({ params }) {
           <p>{order.shipping_city}, {order.shipping_state} {order.shipping_zip}</p>
           <p>{order.shipping_phone}</p>
 
+          <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Payment</div>
+          <p>
+            {order.razorpay_payment_id ? (
+              <span className="order-status order-status-delivered">Paid via Razorpay</span>
+            ) : (
+              <span className="order-status order-status-pending">{order.payment_status || "Unpaid"}</span>
+            )}
+          </p>
+          {order.razorpay_payment_id && (
+            <p style={{ fontSize: ".75rem", color: "var(--a-muted)", marginTop: ".3rem" }}>
+              Payment ID: {order.razorpay_payment_id}
+            </p>
+          )}
+
           <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Status</div>
           <OrderStatusSelect orderId={order.id} status={order.status} />
         </div>

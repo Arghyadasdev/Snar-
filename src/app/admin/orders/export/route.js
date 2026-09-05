@@ -11,10 +11,10 @@ export async function GET() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("orders")
-    .select("id, status, total, discount_amount, coupon_code, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_zip, created_at")
+    .select("id, status, total, discount_amount, coupon_code, shipping_name, shipping_phone, shipping_address, shipping_city, shipping_state, shipping_zip, created_at, payment_status, razorpay_payment_id")
     .order("created_at", { ascending: false });
 
-  const header = ["Order ID", "Date", "Status", "Customer", "Phone", "Address", "City", "State", "ZIP", "Coupon", "Discount", "Total"];
+  const header = ["Order ID", "Date", "Status", "Customer", "Phone", "Address", "City", "State", "ZIP", "Coupon", "Discount", "Total", "Payment Status", "Razorpay Payment ID"];
   const rows = (data || []).map((o) => [
     o.id,
     new Date(o.created_at).toISOString().slice(0, 10),
@@ -28,6 +28,8 @@ export async function GET() {
     o.coupon_code || "",
     o.discount_amount,
     o.total,
+    o.payment_status || "",
+    o.razorpay_payment_id || "",
   ]);
 
   const csv = [header, ...rows].map((row) => row.map(toCsvCell).join(",")).join("\n");
