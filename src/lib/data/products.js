@@ -27,8 +27,8 @@ export async function getCategoryBySlug(slug) {
     .from("categories")
     .select("id, slug, name, parent_id, parent:categories!parent_id(slug, name)")
     .eq("slug", slug)
-    .single();
-  return data || null;
+    .limit(1);
+  return data?.[0] || null;
 }
 
 export async function listProductsByCategory(categorySlug) {
@@ -48,11 +48,12 @@ export async function listProductsByCategory(categorySlug) {
 export async function listProductsByCategoryTree(categorySlug) {
   const supabase = createPublicClient();
 
-  const { data: category } = await supabase
+  const { data: categoryRows } = await supabase
     .from("categories")
     .select("id")
     .eq("slug", categorySlug)
-    .single();
+    .limit(1);
+  const category = categoryRows?.[0];
   if (!category) return [];
 
   const { data: children } = await supabase
@@ -101,6 +102,6 @@ export async function getProductBySlug(slug) {
     )
     .eq("slug", slug)
     .eq("is_active", true)
-    .single();
-  return data || null;
+    .limit(1);
+  return data?.[0] || null;
 }

@@ -1,16 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Script from "next/script";
 import { createRazorpayOrder, verifyAndPlaceOrder } from "@/lib/actions/razorpay";
+
+function waitForRazorpay(timeoutMs = 8000) {
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const start = Date.now();
+    const interval = setInterval(() => {
+      if (typeof window !== "undefined" && window.Razorpay) {
+        clearInterval(interval);
+        resolve(true);
+      } else if (Date.now() - start > timeoutMs) {
+        clearInterval(interval);
+        resolve(false);
+      }
+    }, 100);
+  });
+}
 
 export default function CheckoutForm() {
   const [scriptReady, setScriptReady] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [fields, setFields] = useState({
     name: "", phone: "", address: "", city: "", state: "", zip: "", couponCode: "",
   });
+
+  useEffect(() => {
+    // Covers the case where the script already loaded on a previous mount
+    // (client-side back/forward nav) — onLoad won't fire again for us.
+    if (window.Razorpay) setScriptReady(true);
+  }, []);
 
   function update(key) {
     return (e) => setFields((f) => ({ ...f, [key]: e.target.value }));
@@ -19,13 +45,14 @@ export default function CheckoutForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
+    setPending(true);
 
-    if (!scriptReady) {
-      setError("Payment gateway still loading — try again in a moment.");
+    const ready = scriptReady || (await waitForRazorpay());
+    if (!ready) {
+      setError("Payment gateway failed to load. Check your connection (or an ad-blocker/extension) and reload the page.");
+      setPending(false);
       return;
     }
-
-    setPending(true);
 
     const shipping = {
       name: fields.name.trim(),
@@ -65,10 +92,13 @@ export default function CheckoutForm() {
         if (result.error) {
           setError(result.error);
           setPending(false);
+          setTimeout(() => { window.location.href = "/"; }, 3000);
           return;
         }
 
-        window.location.href = result.whatsappUrl;
+        setSuccess(`Payment successful! Order #${result.orderId.slice(0, 8)} placed. Taking you to your order…`);
+        setPending(false);
+        setTimeout(() => { window.location.href = `/account/orders/${result.orderId}`; }, 1500);
       },
       modal: {
         ondismiss: () => setPending(false),
@@ -78,6 +108,7 @@ export default function CheckoutForm() {
     razorpay.on("payment.failed", (response) => {
       setError(`Payment failed: ${response.error.description}`);
       setPending(false);
+      setTimeout(() => { window.location.href = "/"; }, 3000);
     });
 
     razorpay.open();
@@ -128,10 +159,11 @@ export default function CheckoutForm() {
           style={{ textTransform: "uppercase" }}
         />
 
-        {error && <p className="auth-error">{error}</p>}
+        {error && <p className="auth-error">{error} Redirecting…</p>}
+        {success && <p className="auth-success">{success} Redirecting…</p>}
 
-        <button className="btn-primary" type="submit" disabled={pending} style={{ justifyContent: "center", marginTop: ".5rem" }}>
-          {pending ? "Processing…" : "PAY & PLACE ORDER"}
+        <button className="btn-primary" type="submit" disabled={pending || !!success} style={{ justifyContent: "center", marginTop: ".5rem" }}>
+          {success ? "Done" : pending ? "Processing…" : "PAY & PLACE ORDER"}
         </button>
       </form>
     </>

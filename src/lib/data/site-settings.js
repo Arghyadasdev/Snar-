@@ -11,8 +11,8 @@ const DEFAULTS = {
 
 export async function getSiteSettings() {
   const supabase = createPublicClient();
-  const { data } = await supabase.from("site_settings").select("*").eq("id", 1).single();
-  return data || DEFAULTS;
+  const { data } = await supabase.from("site_settings").select("*").eq("id", 1).limit(1);
+  return data?.[0] || DEFAULTS;
 }
 
 export async function getActiveTestimonials() {

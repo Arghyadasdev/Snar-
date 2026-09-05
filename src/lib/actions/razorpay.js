@@ -3,8 +3,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/dal";
 import { getRazorpayClient, verifyRazorpaySignature } from "@/lib/razorpay";
-import { buildWhatsappOrderLink } from "@/lib/whatsapp";
-import { getSiteSettings } from "@/lib/data/site-settings";
 
 function validateShipping(shipping) {
   for (const [key, value] of Object.entries(shipping)) {
@@ -82,18 +80,5 @@ export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderI
     return { error: "Payment succeeded but we couldn't save your order. Contact support with your payment ID: " + razorpayPaymentId };
   }
 
-  const { data: items } = await supabase
-    .from("order_items")
-    .select("product_name, unit_price, quantity, size")
-    .eq("order_id", orderId);
-
-  const settings = await getSiteSettings();
-  const total = (items || []).reduce((sum, i) => sum + i.unit_price * i.quantity, 0);
-  const whatsappUrl = buildWhatsappOrderLink(
-    settings.whatsapp_number,
-    (items || []).map((i) => ({ name: i.product_name, size: i.size, quantity: i.quantity, price: i.unit_price })),
-    total
-  );
-
-  return { orderId, whatsappUrl };
+  return { orderId };
 }
