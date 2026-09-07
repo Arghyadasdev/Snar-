@@ -4,7 +4,7 @@ import { useState } from "react";
 import { addToCart } from "@/lib/data/cart";
 import { buildWhatsappOrderLink } from "@/lib/whatsapp";
 
-export default function ProductActions({ product, sizes, whatsappNumber, variantId, colorName }) {
+export default function ProductActions({ product, sizes, whatsappNumber, variantId, colorName, stock }) {
   const [size, setSize] = useState(sizes[0] || "");
   const [quantity, setQuantity] = useState(1);
 
@@ -35,11 +35,15 @@ export default function ProductActions({ product, sizes, whatsappNumber, variant
         </div>
       )}
 
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.2rem" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", marginTop: "1.2rem" }}>
         <div className="pd2-qty">
           <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
           <span>{quantity}</span>
           <button type="button" onClick={() => setQuantity((q) => q + 1)} aria-label="Increase quantity">+</button>
+        </div>
+        <div className="pd2-stock">
+          <span className={`pd2-stock-dot${stock > 0 ? "" : " out"}`} />
+          {stock > 0 ? "In stock" : "Out of stock"}
         </div>
       </div>
 

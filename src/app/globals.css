@@ -9,6 +9,18 @@
   --border:rgba(255,255,255,0.07);--border2:rgba(0,196,212,0.25);
   --white:#FFFFFF;--off:#C8CACE;--muted:#6B7280;--muted2:#3E4451;
 }
+/* Scoped light theme for the product detail page (mockup uses a white page
+   with a dark "Customer Reviews" band, unlike the rest of the dark site).
+   Reuses every existing component class — only the tokens they read flip. */
+.pd-light{
+  --bg:#FFFFFF;--bg2:#F3F4F6;--bg3:#EDEEF1;
+  --surface:#F8F9FB;--surface2:#F0F1F4;
+  --border:#E5E7EB;--border2:rgba(0,196,212,0.35);
+  --white:#12141A;--off:#4B5563;--muted:#6B7280;--muted2:#9CA3AF;
+  background:var(--bg);color:var(--white);
+}
+.pd-light .btn-outline{border-color:var(--border)}
+
 html{scroll-behavior:smooth;overflow-x:hidden}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;line-height:1.5}
 img,svg{max-width:100%;height:auto;display:block}
@@ -563,6 +575,12 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .size-option input:checked + span{border-color:var(--ac);color:var(--ac)}
 
 /* ============ PRODUCT DETAIL v2 ============ */
+.pd2-breadcrumb{font-size:.78rem;color:var(--muted);margin-bottom:1.4rem}
+.pd2-breadcrumb a{color:var(--muted);text-decoration:none}
+.pd2-breadcrumb a:hover{color:var(--ac)}
+.pd2-breadcrumb span{color:var(--white)}
+.pd2-reviews-band{background:var(--bg);border-top:1px solid var(--border);padding:3.5rem 0}
+
 .pd2-layout{grid-template-columns:1fr 1fr 220px}
 @media (max-width:1100px){.pd2-layout{grid-template-columns:1fr 1fr}.pd2-trust{grid-column:1 / -1;flex-direction:row;flex-wrap:wrap;gap:1.5rem}}
 .pd2-gallery{display:flex;gap:1rem}
@@ -582,6 +600,13 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .pd2-rating-count{color:var(--muted);font-size:.82rem}
 
 .pd2-off-pill{background:rgba(255,107,107,.15);color:#FF6B6B;font-size:.72rem;font-weight:700;padding:.2rem .6rem;border-radius:6px}
+.pd2-subtitle{color:var(--muted);font-size:.88rem;margin:-.5rem 0 .8rem}
+.pd2-tax-note{color:var(--muted);font-size:.75rem;margin-top:-.9rem;margin-bottom:1rem}
+
+.pd2-lifestyle-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;margin-top:3rem;align-items:start}
+.pd2-tab-heading{font-size:1.1rem;font-weight:700;margin-bottom:.8rem}
+.pd2-tab-body{color:var(--off);line-height:1.7;font-size:.9rem}
+@media (max-width:900px){.pd2-lifestyle-grid{grid-template-columns:1fr}}
 
 .pd2-color-row{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
 .pd2-color-swatch{width:38px;height:38px;border-radius:50%;padding:2px;border:2px solid transparent;cursor:pointer;background:none;flex-shrink:0}
@@ -593,7 +618,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .pd2-qty button:disabled{opacity:.4;cursor:default}
 .pd2-qty span{min-width:36px;text-align:center;font-weight:600;font-size:.9rem}
 
-.pd2-stock{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--muted);margin-top:1.2rem}
+.pd2-stock{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--muted)}
 .pd2-stock-dot{width:8px;height:8px;border-radius:50%;background:#4CD964;flex-shrink:0}
 .pd2-stock-dot.out{background:#FF6B6B}
 

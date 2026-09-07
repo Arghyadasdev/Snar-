@@ -40,6 +40,7 @@ export default function ProductDetailClient({
   const images = currentVariant
     ? [currentVariant.image_url, ...(imagesByVariant[currentVariant.id] || [])]
     : [product.image_url, ...baseImages];
+  const lifestyleImage = baseImages[0] || product.image_url;
 
   const effectiveStock = currentVariant ? currentVariant.stock : product.stock;
   const discountPct =
@@ -69,6 +70,7 @@ export default function ProductDetailClient({
           </div>
 
           <h1 className="product-detail-name">{product.name}</h1>
+          {product.description && <p className="pd2-subtitle">{product.description}</p>}
 
           {rating.count > 0 && (
             <div className="pd2-rating">
@@ -89,7 +91,7 @@ export default function ProductDetailClient({
               </>
             )}
           </div>
-          <p className="product-detail-desc">{product.description}</p>
+          <div className="pd2-tax-note">Inclusive of all taxes</div>
 
           {variants.length > 0 && (
             <div style={{ marginTop: "1rem" }}>
@@ -116,12 +118,8 @@ export default function ProductDetailClient({
             whatsappNumber={whatsappNumber}
             variantId={variantId}
             colorName={currentVariant?.color_name}
+            stock={effectiveStock}
           />
-
-          <div className="pd2-stock">
-            <span className={`pd2-stock-dot${effectiveStock > 0 ? "" : " out"}`} />
-            {effectiveStock > 0 ? "In stock" : "Out of stock"}
-          </div>
         </div>
 
         <div className="pd2-trust">
@@ -155,57 +153,64 @@ export default function ProductDetailClient({
         </div>
       )}
 
-      <div style={{ marginTop: "3rem", maxWidth: "760px" }}>
-        <div className="pd2-tabs">
-          {["description", "features", "size guide", "reviews"].map((t) => (
-            <button
-              key={t}
-              type="button"
-              className={`pd2-tab${tab === t ? " active" : ""}`}
-              onClick={() => (t === "reviews" ? document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" }) : setTab(t))}
-              style={{ textTransform: "capitalize" }}
-            >
-              {t}
-            </button>
-          ))}
+      <div className="pd2-lifestyle-grid">
+        <div className="pd2-lifestyle-banner">
+          <img src={lifestyleImage} alt={product.name} />
         </div>
 
-        {tab === "description" && (
-          <div>
-            <p className="product-detail-desc" style={{ maxWidth: "none" }}>{product.description}</p>
-            {specs.length > 0 && (
-              <ul className="pd2-checklist">
-                {specs.map((s, i) => (
+        <div>
+          <div className="pd2-tabs">
+            {["description", "features", "size guide", "reviews"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                className={`pd2-tab${tab === t ? " active" : ""}`}
+                onClick={() => (t === "reviews" ? document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" }) : setTab(t))}
+                style={{ textTransform: "capitalize" }}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+
+          {tab === "description" && (
+            <div>
+              <h3 className="pd2-tab-heading">Product Description</h3>
+              <p className="pd2-tab-body">{product.description}</p>
+              {specs.length > 0 && (
+                <ul className="pd2-checklist">
+                  {specs.map((s, i) => (
+                    <li key={i}>
+                      <span className="pd2-check-icon">✓</span>
+                      {s.label}: {s.value}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {tab === "features" && (
+            <ul className="pd2-checklist">
+              {specs.length > 0 ? (
+                specs.map((s, i) => (
                   <li key={i}>
                     <span className="pd2-check-icon">✓</span>
                     {s.label}: {s.value}
                   </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
+                ))
+              ) : (
+                <li>No feature details added yet.</li>
+              )}
+            </ul>
+          )}
 
-        {tab === "features" && (
-          <ul className="pd2-checklist">
-            {specs.length > 0 ? (
-              specs.map((s, i) => (
-                <li key={i}>
-                  <span className="pd2-check-icon">✓</span>
-                  {s.label}: {s.value}
-                </li>
-              ))
-            ) : (
-              <li>No feature details added yet.</li>
-            )}
-          </ul>
-        )}
-
-        {tab === "size guide" && (
-          <p className="product-detail-desc" style={{ maxWidth: "none" }}>
-            Standard sizing — true to size. If you're between sizes, we recommend sizing up for a more relaxed fit.
-          </p>
-        )}
+          {tab === "size guide" && (
+            <p className="pd2-tab-body">
+              Standard sizing — true to size. If you're between sizes, we recommend sizing up for a more relaxed fit.
+            </p>
+          )}
+        </div>
       </div>
     </>
   );
