@@ -58,7 +58,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
-      <div className="pd-light shop-page">
+      <div className="shop-page">
         <div className="pd2-breadcrumb">
           <Link href="/">Home</Link>
           {product.category?.slug && (
@@ -138,7 +138,7 @@ export default async function ProductPage({ params }) {
       </div>
 
       {relatedProducts.length > 0 && (
-        <div className="pd-light shop-page" style={{ paddingTop: "2.5rem" }}>
+        <div className="shop-page" style={{ paddingTop: "2.5rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2 className="shop-title" style={{ fontSize: "1.4rem" }}>You May Also Like</h2>
           </div>
