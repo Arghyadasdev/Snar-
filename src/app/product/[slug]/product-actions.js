@@ -6,17 +6,19 @@ import { buildWhatsappOrderLink } from "@/lib/whatsapp";
 
 export default function ProductActions({ product, sizes, whatsappNumber, variantId, colorName }) {
   const [size, setSize] = useState(sizes[0] || "");
+  const [quantity, setQuantity] = useState(1);
 
   const whatsappUrl = buildWhatsappOrderLink(
     whatsappNumber,
-    [{ name: product.name, size, color: colorName, quantity: 1, price: product.price }],
-    product.price
+    [{ name: product.name, size, color: colorName, quantity, price: product.price }],
+    product.price * quantity
   );
 
   return (
     <form action={addToCart} className="product-detail-form">
       <input type="hidden" name="productId" value={product.id} />
       <input type="hidden" name="variantId" value={variantId || ""} />
+      <input type="hidden" name="quantity" value={quantity} />
       <input type="hidden" name="redirectTo" value={`/product/${product.slug}`} />
 
       {sizes.length > 0 && (
@@ -32,6 +34,14 @@ export default function ProductActions({ product, sizes, whatsappNumber, variant
           </div>
         </div>
       )}
+
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "1.2rem" }}>
+        <div className="pd2-qty">
+          <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))} disabled={quantity <= 1} aria-label="Decrease quantity">−</button>
+          <span>{quantity}</span>
+          <button type="button" onClick={() => setQuantity((q) => q + 1)} aria-label="Increase quantity">+</button>
+        </div>
+      </div>
 
       <div style={{ display: "flex", gap: ".8rem", marginTop: "1.5rem", flexWrap: "wrap" }}>
         <button className="btn-primary" type="submit">ADD TO CART</button>

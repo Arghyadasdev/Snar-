@@ -31,6 +31,7 @@ export async function addToCart(formData) {
   const productId = formData.get("productId")?.toString();
   const size = formData.get("size")?.toString() || "";
   const variantId = formData.get("variantId")?.toString() || null;
+  const requestedQty = Math.max(1, Number(formData.get("quantity")) || 1);
   const redirectTo = formData.get("redirectTo")?.toString() || "/cart";
 
   const user = await requireUser(redirectTo);
@@ -55,7 +56,7 @@ export async function addToCart(formData) {
   const { data: existing } = await existingQuery.maybeSingle();
 
   if (existing) {
-    const nextQuantity = Math.min(existing.quantity + 1, stock);
+    const nextQuantity = Math.min(existing.quantity + requestedQty, stock);
     if (nextQuantity > 0) {
       await supabase
         .from("cart_items")
@@ -65,7 +66,7 @@ export async function addToCart(formData) {
   } else if (stock > 0) {
     await supabase
       .from("cart_items")
-      .insert({ user_id: user.id, product_id: productId, size, variant_id: variantId, quantity: 1 });
+      .insert({ user_id: user.id, product_id: productId, size, variant_id: variantId, quantity: Math.min(requestedQty, stock) });
   }
 
   revalidatePath("/cart");

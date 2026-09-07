@@ -108,12 +108,24 @@ export async function getProductBySlug(slug) {
   const { data } = await supabase
     .from("products")
     .select(
-      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, specifications, category:categories(slug, name)"
+      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, specifications, category_id, category:categories(slug, name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)
     .limit(1);
   return data?.[0] || null;
+}
+
+export async function getRelatedProducts(categoryId, excludeProductId, limit = 6) {
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("products")
+    .select("id, slug, name, price, compare_at_price, image_url, category:categories(slug, name)")
+    .eq("category_id", categoryId)
+    .eq("is_active", true)
+    .neq("id", excludeProductId)
+    .limit(limit);
+  return data || [];
 }
 
 export async function getProductReviews(productId) {
@@ -128,5 +140,9 @@ export async function getProductReviews(productId) {
   const reviews = data || [];
   const count = reviews.length;
   const average = count > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / count : 0;
-  return { reviews, average, count };
+  const breakdown = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: reviews.filter((r) => r.rating === star).length,
+  }));
+  return { reviews, average, count, breakdown };
 }
