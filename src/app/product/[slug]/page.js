@@ -41,7 +41,7 @@ export default async function ProductPage({ params }) {
     getProductVariants(product.id),
     getProductReviews(product.id),
     getCurrentUser(),
-    getRelatedProducts(product.category_id, product.id),
+    getRelatedProducts(product.category_id, product.id, 5),
   ]);
   const { reviews, average, count, breakdown } = reviewData;
   const myReview = user ? await getMyReview(product.id) : null;

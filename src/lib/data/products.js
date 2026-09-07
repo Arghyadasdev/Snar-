@@ -118,14 +118,27 @@ export async function getProductBySlug(slug) {
 
 export async function getRelatedProducts(categoryId, excludeProductId, limit = 6) {
   const supabase = createPublicClient();
-  const { data } = await supabase
+  const { data: sameCategory } = await supabase
     .from("products")
     .select("id, slug, name, price, compare_at_price, image_url, category:categories(slug, name)")
     .eq("category_id", categoryId)
     .eq("is_active", true)
     .neq("id", excludeProductId)
     .limit(limit);
-  return data || [];
+
+  const related = sameCategory || [];
+  if (related.length >= limit) return related;
+
+  // Category too thin to fill the row — backfill with other active products.
+  const excludeIds = [excludeProductId, ...related.map((p) => p.id)];
+  const { data: rest } = await supabase
+    .from("products")
+    .select("id, slug, name, price, compare_at_price, image_url, category:categories(slug, name)")
+    .eq("is_active", true)
+    .not("id", "in", `(${excludeIds.join(",")})`)
+    .limit(limit - related.length);
+
+  return [...related, ...(rest || [])];
 }
 
 export async function getProductReviews(productId) {

@@ -656,8 +656,9 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .pd2-review-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.1rem;min-width:260px;max-width:280px;flex-shrink:0;scroll-snap-align:start}
 .pd2-review-avatar{width:34px;height:34px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:var(--ac)}
 
-.pd2-related-track{display:flex;gap:1.2rem;overflow-x:auto;padding-bottom:.5rem;margin-top:1.5rem}
-.pd2-related-track .product-card{min-width:200px;flex-shrink:0;scroll-snap-align:start}
+.pd2-related-track{display:grid;grid-template-columns:repeat(5,1fr);gap:1.2rem;margin-top:1.5rem}
+@media (max-width:1000px){.pd2-related-track{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:640px){.pd2-related-track{grid-template-columns:repeat(2,1fr)}}
 
 @media (max-width:768px){
   .pd2-gallery{flex-direction:column-reverse}
