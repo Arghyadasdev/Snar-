@@ -43,7 +43,7 @@ begin
     select * into v_coupon from public.coupons
       where code = upper(trim(p_coupon_code)) and is_active = true;
 
-    if v_coupon is null then
+    if not found then
       raise exception 'Invalid coupon code';
     end if;
     if v_coupon.expires_at is not null and v_coupon.expires_at < now() then
