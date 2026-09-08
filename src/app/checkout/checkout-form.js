@@ -28,6 +28,7 @@ export default function CheckoutForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [pinStatus, setPinStatus] = useState(null); // null | "loading" | "error"
   const [fields, setFields] = useState({
     name: "", phone: "", address: "", city: "", state: "", zip: "", couponCode: "",
   });
@@ -40,6 +41,30 @@ export default function CheckoutForm() {
 
   function update(key) {
     return (e) => setFields((f) => ({ ...f, [key]: e.target.value }));
+  }
+
+  async function handleZipChange(e) {
+    const zip = e.target.value.replace(/\D/g, "").slice(0, 6);
+    setFields((f) => ({ ...f, zip }));
+    if (zip.length !== 6) {
+      setPinStatus(null);
+      return;
+    }
+
+    setPinStatus("loading");
+    try {
+      const res = await fetch(`https://api.postalpincode.in/pincode/${zip}`);
+      const [result] = await res.json();
+      const office = result?.Status === "Success" ? result.PostOffice?.[0] : null;
+      if (!office) {
+        setPinStatus("error");
+        return;
+      }
+      setFields((f) => ({ ...f, city: office.District, state: office.State }));
+      setPinStatus(null);
+    } catch {
+      setPinStatus("error");
+    }
   }
 
   async function handleSubmit(e) {
@@ -136,16 +161,25 @@ export default function CheckoutForm() {
 
         <div className="form-row-3">
           <div>
+            <label className="auth-label" htmlFor="zip">PIN Code</label>
+            <input
+              className="auth-input"
+              id="zip"
+              inputMode="numeric"
+              value={fields.zip}
+              onChange={handleZipChange}
+              required
+            />
+            {pinStatus === "loading" && <small>Looking up PIN…</small>}
+            {pinStatus === "error" && <small className="auth-error">PIN not found, fill city/state manually.</small>}
+          </div>
+          <div>
             <label className="auth-label" htmlFor="city">City</label>
             <input className="auth-input" id="city" value={fields.city} onChange={update("city")} required />
           </div>
           <div>
             <label className="auth-label" htmlFor="state">State</label>
             <input className="auth-input" id="state" value={fields.state} onChange={update("state")} required />
-          </div>
-          <div>
-            <label className="auth-label" htmlFor="zip">ZIP</label>
-            <input className="auth-input" id="zip" value={fields.zip} onChange={update("zip")} required />
           </div>
         </div>
 
