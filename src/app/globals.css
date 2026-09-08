@@ -710,6 +710,10 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .order-status-shipped{background:rgba(94,114,255,.15);color:#8B9CFF}
 .order-status-delivered{background:rgba(76,217,100,.15);color:#4CD964}
 .order-status-cancelled{background:rgba(255,107,107,.15);color:#FF6B6B}
+.segment-vip{background:rgba(255,193,7,.15);color:#FFC107;margin-left:.5rem}
+.segment-regular{background:rgba(0,196,212,.15);color:var(--ac);margin-left:.5rem}
+.segment-new{background:rgba(94,114,255,.15);color:#8B9CFF;margin-left:.5rem}
+.segment-inactive{background:rgba(255,107,107,.15);color:#FF6B6B;margin-left:.5rem}
 .order-detail-grid{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
 .order-items-list{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .order-item-row{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border)}

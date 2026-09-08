@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logCustomerActivity } from "@/lib/actions/customer-activity";
 
 export async function listAllOrdersAdmin(search = "") {
   await requireAdmin();
@@ -38,7 +39,15 @@ export async function updateOrderStatus(formData) {
   const status = formData.get("status")?.toString();
 
   const admin = createAdminClient();
-  await admin.from("orders").update({ status }).eq("id", id);
+  const { data: order } = await admin.from("orders").update({ status }).eq("id", id).select("user_id").single();
+
+  if (order && (status === "delivered" || status === "cancelled")) {
+    await logCustomerActivity({
+      userId: order.user_id,
+      orderId: id,
+      type: status === "delivered" ? "order_delivered" : "order_cancelled",
+    });
+  }
 
   revalidatePath("/admin/orders");
 }

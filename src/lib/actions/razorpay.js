@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/dal";
 import { getRazorpayClient, verifyRazorpaySignature } from "@/lib/razorpay";
+import { logCustomerActivity } from "@/lib/actions/customer-activity";
 
 function validateShipping(shipping) {
   for (const [key, value] of Object.entries(shipping)) {
@@ -62,7 +63,7 @@ export async function createRazorpayOrder(shipping, couponCode) {
 // Step 2: verify the payment signature server-side, then create the DB
 // order. Only reached after Razorpay confirms payment succeeded.
 export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderId, razorpayPaymentId, razorpaySignature }) {
-  await requireUser("/checkout");
+  const user = await requireUser("/checkout");
 
   const valid = verifyRazorpaySignature({
     orderId: razorpayOrderId,
@@ -86,6 +87,9 @@ export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderI
     console.error("place_paid_order RPC failed:", error.message);
     return { error: "Payment succeeded but we couldn't save your order. Contact support with your payment ID: " + razorpayPaymentId };
   }
+
+  await logCustomerActivity({ userId: user.id, orderId, type: "order_placed" });
+  await logCustomerActivity({ userId: user.id, orderId, type: "payment_completed", metadata: { payment_id: razorpayPaymentId } });
 
   return { orderId };
 }
