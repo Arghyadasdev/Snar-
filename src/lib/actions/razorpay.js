@@ -36,11 +36,17 @@ export async function createRazorpayOrder(shipping, couponCode) {
   }
 
   const razorpay = getRazorpayClient();
-  const order = await razorpay.orders.create({
-    amount: Math.round(total * 100), // paise
-    currency: "INR",
-    receipt: `snar_${Date.now()}`,
-  });
+  let order;
+  try {
+    order = await razorpay.orders.create({
+      amount: Math.round(total * 100), // paise
+      currency: "INR",
+      receipt: `snar_${Date.now()}`,
+    });
+  } catch (err) {
+    console.error("Razorpay order creation failed:", err?.error?.description || err.message);
+    return { error: "Could not start payment. Please try again in a moment." };
+  }
 
   return {
     razorpayOrderId: order.id,
