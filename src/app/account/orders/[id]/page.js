@@ -64,6 +64,14 @@ export default async function OrderDetailPage({ params }) {
               <span className="order-status order-status-pending">{order.payment_status || "Unpaid"}</span>
             )}
           </p>
+
+          {order.awb_code && (
+            <>
+              <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Tracking</div>
+              <p>AWB: {order.awb_code}</p>
+              {order.courier_name && <p>Courier: {order.courier_name}</p>}
+            </>
+          )}
         </div>
       </div>
     </div>

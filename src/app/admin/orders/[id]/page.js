@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getOrderAdmin } from "@/lib/actions/admin-orders";
 import OrderStatusSelect from "../order-status-select";
+import ShiprocketButton from "../shiprocket-button";
 
 export const metadata = { title: "Admin · Order — SNAR" };
 
@@ -71,6 +72,32 @@ export default async function AdminOrderDetailPage({ params }) {
 
           <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Status</div>
           <OrderStatusSelect orderId={order.id} status={order.status} />
+
+          <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Shiprocket</div>
+          {order.awb_code ? (
+            <>
+              <p>AWB: {order.awb_code}</p>
+              {order.courier_name && <p>Courier: {order.courier_name}</p>}
+              {order.shiprocket_status && <p>Status: {order.shiprocket_status}</p>}
+              <p style={{ marginTop: ".6rem" }}>
+                <ShiprocketButton orderId={order.id} label="Refresh Tracking" action="refresh" />
+              </p>
+            </>
+          ) : order.shiprocket_order_id ? (
+            <>
+              <p>Shiprocket order #{order.shiprocket_order_id} created. AWB not yet assigned.</p>
+              <p style={{ marginTop: ".6rem" }}>
+                <ShiprocketButton orderId={order.id} label="Resync Shiprocket" />
+              </p>
+            </>
+          ) : (
+            <>
+              {order.shiprocket_status?.startsWith("error:") && (
+                <p style={{ color: "var(--a-muted)", fontSize: ".85rem" }}>{order.shiprocket_status}</p>
+              )}
+              <ShiprocketButton orderId={order.id} label="Create Shiprocket Shipment" />
+            </>
+          )}
         </div>
       </div>
     </div>
