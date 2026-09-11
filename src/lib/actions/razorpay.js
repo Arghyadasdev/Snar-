@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { requireUser } from "@/lib/auth/dal";
 import { getRazorpayClient, verifyRazorpaySignature } from "@/lib/razorpay";
 import { logCustomerActivity } from "@/lib/actions/customer-activity";
+import { syncOrderToShiprocket } from "@/lib/actions/shiprocket";
 
 function validateShipping(shipping) {
   for (const [key, value] of Object.entries(shipping)) {
@@ -90,6 +91,10 @@ export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderI
 
   await logCustomerActivity({ userId: user.id, orderId, type: "order_placed" });
   await logCustomerActivity({ userId: user.id, orderId, type: "payment_completed", metadata: { payment_id: razorpayPaymentId } });
+
+  // Best-effort: never let a Shiprocket outage or missing credentials block
+  // an already-paid order. Failure is recorded on the order for admin retry.
+  await syncOrderToShiprocket(orderId);
 
   return { orderId };
 }

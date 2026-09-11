@@ -9,6 +9,7 @@ export const metadata = {
   },
 };
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import SiteChrome from "@/components/SiteChrome";
 import { getCurrentUser } from "@/lib/auth/dal";
 import { getCartCount } from "@/lib/data/cart";
@@ -24,6 +25,7 @@ export default async function RootLayout({ children }) {
         <SiteChrome isLoggedIn={!!user} cartCount={cartCount} settings={settings}>
           {children}
         </SiteChrome>
+        <SpeedInsights />
       </body>
     </html>
   );
