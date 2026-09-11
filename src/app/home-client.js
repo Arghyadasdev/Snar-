@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import ProductGrid from "@/components/ProductGrid";
 
@@ -46,6 +47,18 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
   const statsRef = useRef(null);
 
   const heroTimerRef = useRef(null);
+  const heroVideoRefs = useRef([]);
+
+  // Only the active slide's video should ever be playing/downloading —
+  // rendering every slide up front used to autoplay every hero video at
+  // once, competing with the LCP image/video for bandwidth on first load.
+  useEffect(() => {
+    heroVideoRefs.current.forEach((video, idx) => {
+      if (!video) return;
+      if (idx === heroSlide) video.play?.().catch(() => {});
+      else video.pause?.();
+    });
+  }, [heroSlide]);
 
   useEffect(() => {
     const el = statsRef.current;
@@ -90,8 +103,28 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
                 <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(0,0,0,.85) 35%,rgba(0,0,0,.1) 100%)"}}/>
               </div>
               {hci.mediaType === "image"
-                ? <img className="hero-athlete" src={hci.mediaUrl} alt="" style={{objectFit:"cover"}} />
-                : <video className="hero-athlete" src={hci.mediaUrl} autoPlay loop muted playsInline preload="auto" />
+                ? (
+                  <Image
+                    className="hero-athlete"
+                    src={hci.mediaUrl}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    priority={idx === 0}
+                    loading={idx === 0 ? "eager" : "lazy"}
+                  />
+                )
+                : (
+                  <video
+                    ref={(el) => { heroVideoRefs.current[idx] = el; }}
+                    className="hero-athlete"
+                    src={hci.mediaUrl}
+                    loop
+                    muted
+                    playsInline
+                    preload={idx === heroSlide ? "auto" : "none"}
+                  />
+                )
               }
               <div className="hero-overlay" />
               <div className="hero-content">
