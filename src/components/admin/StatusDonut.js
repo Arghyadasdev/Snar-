@@ -6,7 +6,7 @@ const STATUS_COLOR = {
   cancelled: "#FF6B6B",
 };
 
-export default function StatusDonut({ breakdown }) {
+export default function StatusDonut({ breakdown, colorMap = STATUS_COLOR }) {
   const total = breakdown.reduce((sum, s) => sum + s.count, 0);
 
   let acc = 0;
@@ -14,7 +14,7 @@ export default function StatusDonut({ breakdown }) {
     const pct = total > 0 ? (s.count / total) * 100 : 0;
     const from = acc;
     acc += pct;
-    return `${STATUS_COLOR[s.status]} ${from}% ${acc}%`;
+    return `${colorMap[s.status]} ${from}% ${acc}%`;
   });
 
   const gradient = total > 0 ? `conic-gradient(${stops.join(", ")})` : "var(--a-border)";
@@ -30,7 +30,7 @@ export default function StatusDonut({ breakdown }) {
       <div className="status-donut-legend">
         {breakdown.map((s) => (
           <div key={s.status} className="status-donut-legend-row">
-            <span className="status-donut-dot" style={{ background: STATUS_COLOR[s.status] }} />
+            <span className="status-donut-dot" style={{ background: colorMap[s.status] }} />
             <span className="status-donut-legend-label">{s.status}</span>
             <span className="status-donut-legend-count">
               {s.count} {total > 0 ? `(${((s.count / total) * 100).toFixed(1)}%)` : ""}

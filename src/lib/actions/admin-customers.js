@@ -89,6 +89,32 @@ export async function setCustomerStatus(formData) {
   revalidatePath(`/admin/customers/${id}`);
 }
 
+export async function bulkSetCustomerStatus(formData) {
+  await requireAdmin();
+  const ids = formData.get("ids")?.toString().split(",").filter(Boolean) || [];
+  const status = formData.get("status")?.toString();
+  if (ids.length === 0 || !status) return;
+
+  const admin = createAdminClient();
+  await admin.from("profiles").update({ status }).in("id", ids);
+
+  revalidatePath("/admin/customers");
+}
+
+export async function bulkAddCustomerTag(formData) {
+  await requireAdmin();
+  const ids = formData.get("ids")?.toString().split(",").filter(Boolean) || [];
+  const tagId = formData.get("tagId")?.toString();
+  if (ids.length === 0 || !tagId) return;
+
+  const admin = createAdminClient();
+  await admin
+    .from("customer_tags")
+    .upsert(ids.map((customer_id) => ({ customer_id, tag_id: tagId })), { onConflict: "customer_id,tag_id", ignoreDuplicates: true });
+
+  revalidatePath("/admin/customers");
+}
+
 export async function getCustomerDetailAdmin(id) {
   await requireAdmin();
   const admin = createAdminClient();

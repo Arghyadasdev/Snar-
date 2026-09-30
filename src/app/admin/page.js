@@ -11,6 +11,13 @@ const RANGES = [
   { days: 90, label: "90D" },
 ];
 
+const SEGMENT_COLOR = {
+  vip: "#FFC107",
+  regular: "#00C4D4",
+  new: "#4CD964",
+  inactive: "#8B9CFF",
+};
+
 export default async function AdminDashboard({ searchParams }) {
   const params = await searchParams;
   const rangeDays = params?.range ? Number(params.range) : 7;
@@ -34,6 +41,10 @@ export default async function AdminDashboard({ searchParams }) {
         <div className="admin-kpi-card">
           <div className="admin-kpi-label">TOTAL CUSTOMERS</div>
           <div className="admin-kpi-num">{stats.customerCount}</div>
+        </div>
+        <div className="admin-kpi-card">
+          <div className="admin-kpi-label">NEW CUSTOMERS ({stats.rangeDays}D)</div>
+          <div className="admin-kpi-num">{stats.newCustomerCount}</div>
         </div>
         <div className="admin-kpi-card">
           <div className="admin-kpi-label">PENDING ORDERS</div>
@@ -63,6 +74,39 @@ export default async function AdminDashboard({ searchParams }) {
         <div className="admin-panel">
           <div className="admin-panel-title">ORDER STATUS</div>
           <StatusDonut breakdown={stats.statusBreakdown} />
+        </div>
+      </div>
+
+      <div className="admin-dash-grid">
+        <div className="admin-panel">
+          <div className="admin-panel-title">NEW CUSTOMERS — LAST {stats.rangeDays} DAYS</div>
+          <SalesChart data={stats.newCustomersOverview} valueFormat="number" />
+        </div>
+
+        <div className="admin-panel">
+          <div className="admin-panel-title">CUSTOMER SEGMENTS</div>
+          <StatusDonut breakdown={stats.segmentBreakdown} colorMap={SEGMENT_COLOR} />
+        </div>
+      </div>
+
+      <div className="admin-dash-grid">
+        <div className="admin-panel">
+          <div className="admin-panel-title-row">
+            <div className="admin-panel-title">TOP CUSTOMERS</div>
+            <Link href="/admin/customers" className="admin-panel-link">View All Customers →</Link>
+          </div>
+          {stats.topCustomers.length === 0 ? (
+            <p className="empty-state">No paid orders yet.</p>
+          ) : (
+            <div className="admin-top-products">
+              {stats.topCustomers.map((c) => (
+                <Link key={c.id} href={`/admin/customers/${c.id}`} className="admin-top-product-row">
+                  <div className="admin-top-product-name">{c.name}</div>
+                  <div className="admin-top-product-meta">₹{c.totalSpent.toLocaleString()} · {c.totalOrders} orders</div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

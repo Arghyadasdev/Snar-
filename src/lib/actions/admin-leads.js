@@ -28,6 +28,29 @@ export async function getLeadAdmin(id) {
   return data;
 }
 
+export async function getLeadStats() {
+  await requireAdmin();
+  const admin = createAdminClient();
+  const { data } = await admin.from("leads").select("status");
+  const leads = data || [];
+  const converted = leads.filter((l) => l.status === "converted").length;
+  return {
+    total: leads.length,
+    new: leads.filter((l) => l.status === "new").length,
+    contacted: leads.filter((l) => l.status === "contacted").length,
+    converted,
+    conversionRate: leads.length > 0 ? (converted / leads.length) * 100 : 0,
+  };
+}
+
+// Best-effort: if a lead's email matches an existing account, link them so
+// admins can see which customer a lead turned into.
+async function findMatchingCustomerId(admin, email) {
+  if (!email) return null;
+  const { data } = await admin.from("profiles").select("id").ilike("email", email).limit(1).maybeSingle();
+  return data?.id || null;
+}
+
 export async function listAdminUsersForAssignment() {
   await requireAdmin();
   const admin = createAdminClient();
@@ -66,7 +89,15 @@ export async function updateLead(prevState, formData) {
   if (!fields.name) return { error: "Name is required." };
 
   const admin = createAdminClient();
-  const { error } = await admin.from("leads").update({ ...fields, updated_at: new Date().toISOString() }).eq("id", id);
+  const updates = { ...fields, updated_at: new Date().toISOString() };
+  if (fields.status === "converted") {
+    const { data: existing } = await admin.from("leads").select("converted_customer_id").eq("id", id).single();
+    if (!existing?.converted_customer_id) {
+      updates.converted_customer_id = await findMatchingCustomerId(admin, fields.email);
+    }
+  }
+
+  const { error } = await admin.from("leads").update(updates).eq("id", id);
   if (error) return { error: error.message };
 
   revalidatePath("/admin/leads");
@@ -79,7 +110,14 @@ export async function updateLeadStatus(formData) {
   const status = formData.get("status")?.toString();
 
   const admin = createAdminClient();
-  await admin.from("leads").update({ status, updated_at: new Date().toISOString() }).eq("id", id);
+  const updates = { status, updated_at: new Date().toISOString() };
+  if (status === "converted") {
+    const { data: lead } = await admin.from("leads").select("email, converted_customer_id").eq("id", id).single();
+    if (lead && !lead.converted_customer_id) {
+      updates.converted_customer_id = await findMatchingCustomerId(admin, lead.email);
+    }
+  }
+  await admin.from("leads").update(updates).eq("id", id);
 
   revalidatePath("/admin/leads");
 }

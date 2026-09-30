@@ -9,8 +9,10 @@ const PAD_R = 12;
 const PAD_T = 16;
 const PAD_B = 28;
 
-export default function SalesChart({ data }) {
+export default function SalesChart({ data, valueFormat = "currency" }) {
   const [hover, setHover] = useState(null);
+  const formatValue = (v) =>
+    valueFormat === "currency" ? `₹${v >= 1000 ? `${Math.round(v / 1000)}K` : v}` : v.toLocaleString();
 
   const max = Math.max(1, ...data.map((d) => d.total));
   const plotW = WIDTH - PAD_L - PAD_R;
@@ -36,7 +38,7 @@ export default function SalesChart({ data }) {
             <g key={i}>
               <line x1={PAD_L} y1={y} x2={WIDTH - PAD_R} y2={y} stroke="var(--a-border)" strokeWidth="1" />
               <text x={PAD_L - 8} y={y + 4} textAnchor="end" fontSize="10" fill="var(--a-muted)">
-                ₹{v >= 1000 ? `${Math.round(v / 1000)}K` : v}
+                {formatValue(v)}
               </text>
             </g>
           );
@@ -76,7 +78,7 @@ export default function SalesChart({ data }) {
           <div className="sales-chart-tooltip-date">
             {new Date(points[hover].day).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
           </div>
-          <div className="sales-chart-tooltip-value">₹{points[hover].total.toLocaleString()}</div>
+          <div className="sales-chart-tooltip-value">{formatValue(points[hover].total)}</div>
         </div>
       )}
     </div>

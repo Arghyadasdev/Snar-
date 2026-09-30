@@ -22,6 +22,13 @@ export default function CustomerFilters({ query, status, segment }) {
         <option value="inactive">Inactive</option>
       </select>
       <button type="submit" className="btn-outline" style={{ padding: ".6rem 1.2rem" }}>Filter</button>
+      <a
+        href={`/admin/customers/export?q=${encodeURIComponent(query || "")}&status=${encodeURIComponent(status || "")}&segment=${encodeURIComponent(segment || "")}`}
+        className="btn-outline"
+        style={{ padding: ".6rem 1.2rem" }}
+      >
+        Export CSV
+      </a>
     </form>
   );
 }
