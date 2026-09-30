@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logCustomerActivity } from "@/lib/actions/customer-activity";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function listAllOrdersAdmin(search = "") {
   await requireAdmin();
@@ -34,12 +35,12 @@ export async function getOrderAdmin(id) {
 }
 
 export async function updateOrderStatus(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const status = formData.get("status")?.toString();
 
   const admin = createAdminClient();
-  const { data: order } = await admin.from("orders").update({ status }).eq("id", id).select("user_id").single();
+  const { data: order } = await admin.from("orders").update({ status }).eq("id", id).select("user_id, status").single();
 
   if (order && (status === "delivered" || status === "cancelled")) {
     await logCustomerActivity({
@@ -49,5 +50,8 @@ export async function updateOrderStatus(formData) {
     });
   }
 
+  await logAdminActivity({ admin: admin_, action: "order_status_changed", entityType: "order", entityId: id, metadata: { status } });
+
   revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
 }

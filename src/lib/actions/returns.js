@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireUser, requireAdmin } from "@/lib/auth/dal";
 import { refundRazorpayPayment } from "@/lib/razorpay";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function createReturnRequest(prevState, formData) {
   const orderId = formData.get("orderId")?.toString();
@@ -52,7 +53,7 @@ export async function listReturnsAdmin(status = "") {
 // the request is left at 'approved' so admin can retry rather than silently
 // losing the approval.
 export async function approveReturn(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const admin = createAdminClient();
 
@@ -75,6 +76,13 @@ export async function approveReturn(formData) {
       })
       .eq("id", id);
     await admin.from("orders").update({ status: "cancelled" }).eq("id", ret.order_id);
+    await logAdminActivity({
+      admin: admin_,
+      action: "return_refunded",
+      entityType: "return_request",
+      entityId: id,
+      metadata: { order_id: ret.order_id, refund_amount: ret.order.total, razorpay_refund_id: refund.id },
+    });
   } catch (err) {
     console.error("Refund failed:", err?.error?.description || err.message);
     await admin.from("return_requests").update({ status: "approved", updated_at: new Date().toISOString() }).eq("id", id);
@@ -84,9 +92,10 @@ export async function approveReturn(formData) {
 }
 
 export async function rejectReturn(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const admin = createAdminClient();
   await admin.from("return_requests").update({ status: "rejected", updated_at: new Date().toISOString() }).eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "return_rejected", entityType: "return_request", entityId: id });
   revalidatePath("/admin/returns");
 }

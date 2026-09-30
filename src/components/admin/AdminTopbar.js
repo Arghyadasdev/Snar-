@@ -2,6 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { titleForPath } from "./nav";
+import AdminCommandPalette from "./AdminCommandPalette";
+import AdminNotifications from "./AdminNotifications";
 
 export default function AdminTopbar({ name, email }) {
   const pathname = usePathname();
@@ -10,7 +12,9 @@ export default function AdminTopbar({ name, email }) {
   return (
     <header className="admin-topbar">
       <h1 className="admin-topbar-title">{titleForPath(pathname)}</h1>
+      <AdminCommandPalette />
       <div className="admin-topbar-right">
+        <AdminNotifications />
         <div className="admin-avatar">{initials}</div>
         <div className="admin-topbar-who">
           <div className="admin-topbar-name">{name || "Admin"}</div>

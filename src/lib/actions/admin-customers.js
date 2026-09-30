@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeSegment } from "@/lib/customer-segment";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function listCustomersAdmin(search = "", status = "", segment = "") {
   await requireAdmin();
@@ -55,6 +56,7 @@ export async function setCustomerRole(formData) {
 
   const admin = createAdminClient();
   await admin.from("profiles").update({ role }).eq("id", id);
+  await logAdminActivity({ admin: currentAdmin, action: "customer_role_changed", entityType: "customer", entityId: id, metadata: { role } });
 
   revalidatePath("/admin/customers");
 }
@@ -78,12 +80,13 @@ export async function resetCustomerPassword(prevState, formData) {
 }
 
 export async function setCustomerStatus(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const status = formData.get("status")?.toString();
 
   const admin = createAdminClient();
   await admin.from("profiles").update({ status }).eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "customer_status_changed", entityType: "customer", entityId: id, metadata: { status } });
 
   revalidatePath("/admin/customers");
   revalidatePath(`/admin/customers/${id}`);

@@ -12,6 +12,7 @@ import {
   generateShiprocketInvoice,
   cancelShiprocketOrder,
 } from "@/lib/shiprocket";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 // Credentials can be set from Admin -> Settings instead of env vars +
 // redeploy. Empty columns mean "not set from the UI"; lib/shiprocket.js
@@ -189,7 +190,7 @@ export async function generateInvoice(formData) {
 // (admin still controls that via the Status dropdown) so a cancelled
 // shipment doesn't silently relabel a return/dispute as "cancelled".
 export async function cancelShipment(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
   const admin = createAdminClient();
 
@@ -201,6 +202,7 @@ export async function cancelShipment(formData) {
   try {
     await cancelShiprocketOrder(order.shiprocket_order_id, credentials);
     await admin.from("orders").update({ shiprocket_status: "Cancelled" }).eq("id", orderId);
+    await logAdminActivity({ admin: admin_, action: "shipment_cancelled", entityType: "order", entityId: orderId });
   } catch (err) {
     console.error("Shiprocket cancellation failed:", err.message);
     await admin.from("orders").update({ shiprocket_status: `error: ${err.message}` }).eq("id", orderId);

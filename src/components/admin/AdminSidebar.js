@@ -15,6 +15,7 @@ const ICONS = {
   star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />,
   discount: <><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.25L3.25 3.25a1 1 0 0 0-1 1v6.34a2 2 0 0 0 .58 1.41l9.6 9.6a2 2 0 0 0 2.82 0l6.34-6.34a2 2 0 0 0 0-2.82z" /><circle cx="7.5" cy="7.5" r="1.25" fill="currentColor" /></>,
   help: <><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" /></>,
+  activity: <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />,
   settings: <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></>,
 };
 
@@ -29,15 +30,20 @@ export default function AdminSidebar() {
       </Link>
 
       <nav className="admin-sidebar-nav">
-        {ADMIN_NAV.map((item) => {
+        {ADMIN_NAV.map((item, index) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+          const showHeader = index === 0 || item.section !== ADMIN_NAV[index - 1].section;
+
           return (
-            <Link key={item.href} href={item.href} className={`admin-nav-link${active ? " active" : ""}`}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                {ICONS[item.icon]}
-              </svg>
-              {item.label}
-            </Link>
+            <div key={item.href}>
+              {showHeader && <div className="admin-nav-section">{item.section}</div>}
+              <Link href={item.href} className={`admin-nav-link${active ? " active" : ""}`}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  {ICONS[item.icon]}
+                </svg>
+                {item.label}
+              </Link>
+            </div>
           );
         })}
       </nav>
