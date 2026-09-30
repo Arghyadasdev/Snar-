@@ -3,7 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createShiprocketOrder, trackShiprocketShipment } from "@/lib/shiprocket";
+import {
+  createShiprocketOrder,
+  trackShiprocketShipment,
+  assignShiprocketAWB,
+  requestShiprocketPickup,
+  generateShiprocketLabel,
+  generateShiprocketInvoice,
+  cancelShiprocketOrder,
+} from "@/lib/shiprocket";
 
 // Credentials can be set from Admin -> Settings instead of env vars +
 // redeploy. Empty columns mean "not set from the UI"; lib/shiprocket.js
@@ -68,6 +76,136 @@ export async function createShiprocketShipment(formData) {
   await requireAdmin();
   const orderId = formData.get("id")?.toString();
   await syncOrderToShiprocket(orderId);
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+// Assigns a courier + AWB — the step that turns a created Shiprocket order
+// into an actual trackable shipment. Without this, "Create Shiprocket
+// Shipment" alone leaves the order sitting unassigned in Shiprocket forever.
+export async function assignAwb(formData) {
+  await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_shipment_id").eq("id", orderId).single();
+  if (!order?.shiprocket_shipment_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    const result = await assignShiprocketAWB(order.shiprocket_shipment_id, credentials);
+    const data = result?.response?.data || result;
+
+    await admin
+      .from("orders")
+      .update({
+        awb_code: data?.awb_code?.toString() || undefined,
+        courier_name: data?.courier_name || undefined,
+        shiprocket_status: "AWB Assigned",
+      })
+      .eq("id", orderId);
+  } catch (err) {
+    console.error("Shiprocket AWB assignment failed:", err.message);
+    await admin.from("orders").update({ shiprocket_status: `error: ${err.message}` }).eq("id", orderId);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+// Schedules courier pickup. Only meaningful once an AWB is assigned.
+export async function requestPickup(formData) {
+  await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_shipment_id").eq("id", orderId).single();
+  if (!order?.shiprocket_shipment_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    const result = await requestShiprocketPickup(order.shiprocket_shipment_id, credentials);
+    const data = result?.response || result;
+
+    await admin
+      .from("orders")
+      .update({
+        shiprocket_pickup_status: data?.pickup_status?.toString() || data?.pickup_scheduled_date || "requested",
+      })
+      .eq("id", orderId);
+  } catch (err) {
+    console.error("Shiprocket pickup request failed:", err.message);
+    await admin.from("orders").update({ shiprocket_pickup_status: `error: ${err.message}` }).eq("id", orderId);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+export async function generateLabel(formData) {
+  await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_shipment_id").eq("id", orderId).single();
+  if (!order?.shiprocket_shipment_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    const result = await generateShiprocketLabel(order.shiprocket_shipment_id, credentials);
+    if (result?.label_url) {
+      await admin.from("orders").update({ shiprocket_label_url: result.label_url }).eq("id", orderId);
+    }
+  } catch (err) {
+    console.error("Shiprocket label generation failed:", err.message);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+export async function generateInvoice(formData) {
+  await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_order_id").eq("id", orderId).single();
+  if (!order?.shiprocket_order_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    const result = await generateShiprocketInvoice(order.shiprocket_order_id, credentials);
+    if (result?.invoice_url) {
+      await admin.from("orders").update({ shiprocket_invoice_url: result.invoice_url }).eq("id", orderId);
+    }
+  } catch (err) {
+    console.error("Shiprocket invoice generation failed:", err.message);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+// Cancels the shipment in Shiprocket. Does not change our own order status
+// (admin still controls that via the Status dropdown) so a cancelled
+// shipment doesn't silently relabel a return/dispute as "cancelled".
+export async function cancelShipment(formData) {
+  await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_order_id").eq("id", orderId).single();
+  if (!order?.shiprocket_order_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    await cancelShiprocketOrder(order.shiprocket_order_id, credentials);
+    await admin.from("orders").update({ shiprocket_status: "Cancelled" }).eq("id", orderId);
+  } catch (err) {
+    console.error("Shiprocket cancellation failed:", err.message);
+    await admin.from("orders").update({ shiprocket_status: `error: ${err.message}` }).eq("id", orderId);
+  }
+
   revalidatePath(`/admin/orders/${orderId}`);
 }
 

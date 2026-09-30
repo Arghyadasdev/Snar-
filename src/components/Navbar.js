@@ -167,6 +167,12 @@ export default function Navbar({ isLoggedIn = false, cartCount = 0, settings }) 
               </SpotlightLink>
             ))}
 
+            <Link href="/search" className="pill-link" aria-label="Search" style={{ padding: ".55rem" }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </Link>
+
             <Link href="/account" className="pill-link" aria-label="Account" style={{ padding: ".55rem" }}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
@@ -204,6 +210,7 @@ export default function Navbar({ isLoggedIn = false, cartCount = 0, settings }) 
               <Link href="/women"       onClick={closeMenu}>Women</Link>
               <Link href="/accessories" onClick={closeMenu}>Accessories</Link>
               <Link href="/collections" onClick={closeMenu}>Collections</Link>
+              <Link href="/search" onClick={closeMenu}>Search</Link>
               <Link href="/about"       onClick={closeMenu}>About Us</Link>
               <Link href="/cart"        onClick={closeMenu}>Cart{cartCount > 0 ? ` (${cartCount})` : ""}</Link>
               <Link href="/account"     onClick={closeMenu}>{isLoggedIn ? "My Account" : "Log In"}</Link>

@@ -74,28 +74,70 @@ export default async function AdminOrderDetailPage({ params }) {
           <OrderStatusSelect orderId={order.id} status={order.status} />
 
           <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Shiprocket</div>
-          {order.awb_code ? (
+          {order.shiprocket_status?.startsWith("error:") && (
+            <p style={{ color: "var(--a-muted)", fontSize: ".85rem" }}>{order.shiprocket_status}</p>
+          )}
+
+          {!order.shiprocket_order_id && (
+            <ShiprocketButton orderId={order.id} label="Create Shiprocket Shipment" action="create" />
+          )}
+
+          {order.shiprocket_order_id && (
             <>
-              <p>AWB: {order.awb_code}</p>
-              {order.courier_name && <p>Courier: {order.courier_name}</p>}
-              {order.shiprocket_status && <p>Status: {order.shiprocket_status}</p>}
-              <p style={{ marginTop: ".6rem" }}>
-                <ShiprocketButton orderId={order.id} label="Refresh Tracking" action="refresh" />
-              </p>
-            </>
-          ) : order.shiprocket_order_id ? (
-            <>
-              <p>Shiprocket order #{order.shiprocket_order_id} created. AWB not yet assigned.</p>
-              <p style={{ marginTop: ".6rem" }}>
-                <ShiprocketButton orderId={order.id} label="Resync Shiprocket" />
-              </p>
-            </>
-          ) : (
-            <>
-              {order.shiprocket_status?.startsWith("error:") && (
-                <p style={{ color: "var(--a-muted)", fontSize: ".85rem" }}>{order.shiprocket_status}</p>
+              <p>Shiprocket order #{order.shiprocket_order_id}</p>
+
+              {order.awb_code ? (
+                <>
+                  <p>AWB: {order.awb_code}</p>
+                  {order.courier_name && <p>Courier: {order.courier_name}</p>}
+                  {order.shiprocket_status && <p>Status: {order.shiprocket_status}</p>}
+                </>
+              ) : (
+                <p style={{ color: "var(--a-muted)", fontSize: ".85rem" }}>AWB not yet assigned.</p>
               )}
-              <ShiprocketButton orderId={order.id} label="Create Shiprocket Shipment" />
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", marginTop: ".6rem" }}>
+                {!order.awb_code && (
+                  <>
+                    <ShiprocketButton orderId={order.id} label="Assign AWB" action="assignAwb" />
+                    <ShiprocketButton orderId={order.id} label="Resync Shiprocket" action="create" />
+                  </>
+                )}
+
+                {order.awb_code && (
+                  <>
+                    <ShiprocketButton orderId={order.id} label="Refresh Tracking" action="refresh" />
+
+                    {order.shiprocket_pickup_status ? (
+                      <span className="order-status order-status-processing" style={{ alignSelf: "center" }}>
+                        Pickup: {order.shiprocket_pickup_status}
+                      </span>
+                    ) : (
+                      <ShiprocketButton orderId={order.id} label="Request Pickup" action="requestPickup" />
+                    )}
+
+                    {order.shiprocket_label_url ? (
+                      <a href={order.shiprocket_label_url} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ padding: ".5rem 1rem" }}>
+                        Download Label
+                      </a>
+                    ) : (
+                      <ShiprocketButton orderId={order.id} label="Generate Label" action="generateLabel" />
+                    )}
+
+                    {order.shiprocket_invoice_url ? (
+                      <a href={order.shiprocket_invoice_url} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ padding: ".5rem 1rem" }}>
+                        Download Invoice
+                      </a>
+                    ) : (
+                      <ShiprocketButton orderId={order.id} label="Generate Invoice" action="generateInvoice" />
+                    )}
+                  </>
+                )}
+
+                {order.shiprocket_status !== "Cancelled" && (
+                  <ShiprocketButton orderId={order.id} label="Cancel Shipment" action="cancelShipment" danger />
+                )}
+              </div>
             </>
           )}
         </div>

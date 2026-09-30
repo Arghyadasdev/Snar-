@@ -16,3 +16,8 @@ export function verifyRazorpaySignature({ orderId, paymentId, signature }) {
     .digest("hex");
   return expected === signature;
 }
+
+export async function refundRazorpayPayment(paymentId, amount) {
+  const razorpay = getRazorpayClient();
+  return razorpay.payments.refund(paymentId, { amount: Math.round(amount * 100) });
+}

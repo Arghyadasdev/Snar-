@@ -141,6 +141,21 @@ export async function getRelatedProducts(categoryId, excludeProductId, limit = 6
   return [...related, ...(rest || [])];
 }
 
+export async function searchProducts(query) {
+  const q = query?.trim();
+  if (!q) return [];
+
+  const supabase = createPublicClient();
+  const { data } = await supabase
+    .from("products")
+    .select("id, slug, name, price, compare_at_price, image_url, category:categories(slug, name)")
+    .eq("is_active", true)
+    .or(`name.ilike.%${q}%,description.ilike.%${q}%`)
+    .order("created_at", { ascending: false });
+
+  return data || [];
+}
+
 export async function getProductReviews(productId) {
   const supabase = createPublicClient();
   const { data } = await supabase

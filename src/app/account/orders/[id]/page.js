@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
 import { getOrder } from "@/lib/data/orders";
+import { getReturnForOrder } from "@/lib/actions/returns";
+import ReturnRequestForm from "./return-request-form";
 
 export const metadata = { title: "Order Details — SNAR" };
 
 export default async function OrderDetailPage({ params }) {
   const { id } = await params;
-  const order = await getOrder(id);
+  const [order, existingReturn] = await Promise.all([getOrder(id), getReturnForOrder(id)]);
   if (!order) notFound();
 
   return (
@@ -70,6 +72,13 @@ export default async function OrderDetailPage({ params }) {
               <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Tracking</div>
               <p>AWB: {order.awb_code}</p>
               {order.courier_name && <p>Courier: {order.courier_name}</p>}
+            </>
+          )}
+
+          {order.status === "delivered" && (
+            <>
+              <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Return</div>
+              <ReturnRequestForm orderId={order.id} existingReturn={existingReturn} />
             </>
           )}
         </div>

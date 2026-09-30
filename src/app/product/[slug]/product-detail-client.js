@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { toggleWishlist } from "@/lib/actions/wishlist";
 import ProductGalleryView from "./product-gallery-view";
 import ProductActions from "./product-actions";
 
@@ -31,9 +33,12 @@ export default function ProductDetailClient({
   rating,
   specs,
   freeShippingThreshold,
+  initialWishlisted = false,
+  isLoggedIn = false,
 }) {
+  const pathname = usePathname();
   const [variantId, setVariantId] = useState(variants[0]?.id || null);
-  const [wishlisted, setWishlisted] = useState(false);
+  const [wishlisted, setWishlisted] = useState(initialWishlisted);
   const [tab, setTab] = useState("description");
   const currentVariant = variants.find((v) => v.id === variantId) || null;
 
@@ -60,7 +65,19 @@ export default function ProductDetailClient({
               type="button"
               className={`pd2-wishlist${wishlisted ? " active" : ""}`}
               style={{ position: "static" }}
-              onClick={() => setWishlisted((w) => !w)}
+              onClick={async () => {
+                if (!isLoggedIn) {
+                  window.location.href = `/login?next=${encodeURIComponent(pathname)}`;
+                  return;
+                }
+                setWishlisted((w) => !w);
+                const result = await toggleWishlist(product.id);
+                if (result === null) {
+                  window.location.href = `/login?next=${encodeURIComponent(pathname)}`;
+                  return;
+                }
+                setWishlisted(result);
+              }}
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
               <svg viewBox="0 0 24 24" fill={wishlisted ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">

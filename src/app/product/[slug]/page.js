@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/products";
 import { getSiteSettings } from "@/lib/data/site-settings";
 import { getMyReview } from "@/lib/actions/reviews";
+import { isProductWishlisted } from "@/lib/actions/wishlist";
 import { getCurrentUser } from "@/lib/auth/dal";
 import ProductCard from "@/components/ProductCard";
 import ProductDetailClient from "./product-detail-client";
@@ -36,12 +37,13 @@ export default async function ProductPage({ params }) {
   const [product, settings] = await Promise.all([getProductBySlug(slug), getSiteSettings()]);
   if (!product) notFound();
 
-  const [allImages, variants, reviewData, user, relatedProducts] = await Promise.all([
+  const [allImages, variants, reviewData, user, relatedProducts, wishlisted] = await Promise.all([
     getProductImages(product.id),
     getProductVariants(product.id),
     getProductReviews(product.id),
     getCurrentUser(),
     getRelatedProducts(product.category_id, product.id, 5),
+    isProductWishlisted(product.id),
   ]);
   const { reviews, average, count, breakdown } = reviewData;
   const myReview = user ? await getMyReview(product.id) : null;
@@ -81,6 +83,8 @@ export default async function ProductPage({ params }) {
           rating={{ average, count }}
           specs={specs}
           freeShippingThreshold={settings.free_shipping_threshold}
+          initialWishlisted={wishlisted}
+          isLoggedIn={!!user}
         />
       </div>
 

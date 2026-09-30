@@ -131,3 +131,37 @@ export async function cancelShiprocketOrder(shiprocketOrderId, credentials) {
     body: JSON.stringify({ ids: [shiprocketOrderId] }),
   }, credentials);
 }
+
+// Assigns a courier + AWB to a shipment. Omit courierId to let Shiprocket
+// auto-pick its recommended courier for that pickup location/destination.
+export async function assignShiprocketAWB(shipmentId, credentials, courierId) {
+  return shiprocketFetch("/courier/assign/awb", {
+    method: "POST",
+    body: JSON.stringify({ shipment_id: Number(shipmentId), ...(courierId ? { courier_id: courierId } : {}) }),
+  }, credentials);
+}
+
+// Must be called after AWB assignment. Schedules the courier to collect the
+// package from the configured pickup location.
+export async function requestShiprocketPickup(shipmentId, credentials) {
+  return shiprocketFetch("/courier/generate/pickup", {
+    method: "POST",
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  }, credentials);
+}
+
+export async function generateShiprocketLabel(shipmentId, credentials) {
+  return shiprocketFetch("/courier/generate/label", {
+    method: "POST",
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  }, credentials);
+}
+
+// Takes Shiprocket's own numeric order id (orders.shiprocket_order_id), not
+// our order id or the shipment id.
+export async function generateShiprocketInvoice(shiprocketOrderId, credentials) {
+  return shiprocketFetch("/orders/print/invoice", {
+    method: "POST",
+    body: JSON.stringify({ ids: [Number(shiprocketOrderId)] }),
+  }, credentials);
+}

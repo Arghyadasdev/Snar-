@@ -21,6 +21,10 @@ export default function LoginForm({ next }) {
         <label className="auth-label" htmlFor="password">Password</label>
         <input className="auth-input" id="password" name="password" type="password" required autoComplete="current-password" />
 
+        <p className="auth-switch" style={{ textAlign: "right", marginTop: "-.6rem" }}>
+          <Link href="/forgot-password">Forgot password?</Link>
+        </p>
+
         {state?.error && <p className="auth-error">{state.error}</p>}
 
         <button className="auth-btn" type="submit" disabled={pending}>

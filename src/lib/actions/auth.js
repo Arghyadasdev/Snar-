@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 
 export async function signup(prevState, formData) {
@@ -77,6 +78,23 @@ export async function login(prevState, formData) {
   }
 
   redirect(next);
+}
+
+export async function requestPasswordReset(prevState, formData) {
+  const email = formData.get("email")?.toString().trim();
+  if (!email) return { error: "Please enter your email." };
+
+  const supabase = await createClient();
+  const hdrs = await headers();
+  const origin = hdrs.get("origin") || `https://${hdrs.get("host")}`;
+
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
+  });
+
+  // Same message whether or not the email is registered — don't leak which
+  // emails have accounts.
+  return { success: "If an account exists for that email, a reset link has been sent." };
 }
 
 export async function changeMyPassword(prevState, formData) {
