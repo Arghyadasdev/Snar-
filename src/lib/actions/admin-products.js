@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { uploadProductImage } from "@/lib/cloudinary";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function listAllProductsAdmin(search = "") {
   await requireAdmin();
@@ -93,7 +94,7 @@ async function readProductForm(formData) {
 }
 
 export async function createProduct(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const fields = await readProductForm(formData);
 
   if (!fields.name || !fields.price || !fields.category_id || !fields.image_url) {
@@ -101,14 +102,17 @@ export async function createProduct(prevState, formData) {
   }
 
   const admin = createAdminClient();
-  const { error } = await admin.from("products").insert({
-    ...fields,
-    slug: slugify(fields.name),
-  });
+  const { data, error } = await admin
+    .from("products")
+    .insert({ ...fields, slug: slugify(fields.name) })
+    .select("id")
+    .single();
 
   if (error) {
     return { error: error.message };
   }
+
+  await logAdminActivity({ admin: admin_, action: "product_created", entityType: "product", entityId: data.id, metadata: { name: fields.name, price: fields.price } });
 
   revalidatePath("/admin/products");
   revalidatePath("/collections");
@@ -116,7 +120,7 @@ export async function createProduct(prevState, formData) {
 }
 
 export async function updateProduct(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const fields = await readProductForm(formData);
 
@@ -131,17 +135,20 @@ export async function updateProduct(prevState, formData) {
     return { error: error.message };
   }
 
+  await logAdminActivity({ admin: admin_, action: "product_updated", entityType: "product", entityId: id, metadata: { name: fields.name, price: fields.price } });
+
   revalidatePath("/admin/products");
   revalidatePath("/collections");
   redirect("/admin/products");
 }
 
 export async function deleteProduct(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
 
   const admin = createAdminClient();
   await admin.from("products").delete().eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "product_deleted", entityType: "product", entityId: id });
 
   revalidatePath("/admin/products");
   revalidatePath("/collections");

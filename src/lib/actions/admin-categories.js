@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 function slugify(name) {
   return name
@@ -31,7 +32,7 @@ export async function getCategoryAdmin(id) {
 }
 
 export async function createCategory(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const name = formData.get("name")?.toString().trim();
   const parentId = formData.get("parentId")?.toString() || null;
 
@@ -40,15 +41,17 @@ export async function createCategory(prevState, formData) {
   }
 
   const admin = createAdminClient();
-  const { error } = await admin.from("categories").insert({
-    name,
-    slug: slugify(name),
-    parent_id: parentId || null,
-  });
+  const { data, error } = await admin
+    .from("categories")
+    .insert({ name, slug: slugify(name), parent_id: parentId || null })
+    .select("id")
+    .single();
 
   if (error) {
     return { error: error.message };
   }
+
+  await logAdminActivity({ admin: admin_, action: "category_created", entityType: "category", entityId: data.id, metadata: { name } });
 
   revalidatePath("/admin/categories");
   revalidatePath("/collections");
@@ -56,7 +59,7 @@ export async function createCategory(prevState, formData) {
 }
 
 export async function updateCategory(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const name = formData.get("name")?.toString().trim();
   const parentId = formData.get("parentId")?.toString() || null;
@@ -78,17 +81,20 @@ export async function updateCategory(prevState, formData) {
     return { error: error.message };
   }
 
+  await logAdminActivity({ admin: admin_, action: "category_updated", entityType: "category", entityId: id, metadata: { name } });
+
   revalidatePath("/admin/categories");
   revalidatePath("/collections");
   redirect("/admin/categories");
 }
 
 export async function deleteCategory(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
 
   const admin = createAdminClient();
   await admin.from("categories").delete().eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "category_deleted", entityType: "category", entityId: id });
 
   revalidatePath("/admin/categories");
   revalidatePath("/collections");

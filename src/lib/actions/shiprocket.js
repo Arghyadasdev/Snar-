@@ -10,6 +10,8 @@ import {
   requestShiprocketPickup,
   generateShiprocketLabel,
   generateShiprocketInvoice,
+  generateShiprocketManifest,
+  getServiceableCouriers,
   cancelShiprocketOrder,
 } from "@/lib/shiprocket";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
@@ -20,7 +22,7 @@ import { logAdminActivity } from "@/lib/actions/admin-activity";
 async function getShiprocketCredentials(admin) {
   const { data } = await admin
     .from("site_settings")
-    .select("shiprocket_email, shiprocket_password, shiprocket_pickup_location")
+    .select("shiprocket_email, shiprocket_password, shiprocket_pickup_location, shiprocket_pickup_pincode")
     .eq("id", 1)
     .single();
 
@@ -28,6 +30,7 @@ async function getShiprocketCredentials(admin) {
     email: data?.shiprocket_email || undefined,
     password: data?.shiprocket_password || undefined,
     pickupLocation: data?.shiprocket_pickup_location || undefined,
+    pickupPincode: data?.shiprocket_pickup_pincode || undefined,
   };
 }
 
@@ -74,18 +77,49 @@ export async function syncOrderToShiprocket(orderId) {
 }
 
 export async function createShiprocketShipment(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
   await syncOrderToShiprocket(orderId);
+  await logAdminActivity({ admin: admin_, action: "shiprocket_shipment_synced", entityType: "order", entityId: orderId });
   revalidatePath(`/admin/orders/${orderId}`);
+}
+
+// Couriers that can actually deliver to this order's pincode, for the
+// manual courier picker. Falls back to an empty list (UI then just offers
+// "Auto-assign") if the pickup pincode isn't configured yet or the call
+// fails for any reason.
+export async function getAvailableCouriersForOrder(orderId) {
+  await requireAdmin();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shipping_zip").eq("id", orderId).single();
+  if (!order) return [];
+
+  const credentials = await getShiprocketCredentials(admin);
+  if (!credentials.pickupPincode) return [];
+
+  try {
+    const result = await getServiceableCouriers({
+      pickupPincode: credentials.pickupPincode,
+      deliveryPincode: order.shipping_zip,
+      weight: Number(process.env.SHIPROCKET_DEFAULT_ITEM_WEIGHT_KG || 0.3),
+    }, credentials);
+
+    return result?.data?.available_courier_companies || [];
+  } catch (err) {
+    console.error("Shiprocket serviceability check failed:", err.message);
+    return [];
+  }
 }
 
 // Assigns a courier + AWB — the step that turns a created Shiprocket order
 // into an actual trackable shipment. Without this, "Create Shiprocket
 // Shipment" alone leaves the order sitting unassigned in Shiprocket forever.
+// courierId is optional — omit it to let Shiprocket auto-pick.
 export async function assignAwb(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
+  const courierId = formData.get("courierId")?.toString() || undefined;
   const admin = createAdminClient();
 
   const { data: order } = await admin.from("orders").select("shiprocket_shipment_id").eq("id", orderId).single();
@@ -94,7 +128,7 @@ export async function assignAwb(formData) {
   const credentials = await getShiprocketCredentials(admin);
 
   try {
-    const result = await assignShiprocketAWB(order.shiprocket_shipment_id, credentials);
+    const result = await assignShiprocketAWB(order.shiprocket_shipment_id, credentials, courierId);
     const data = result?.response?.data || result;
 
     await admin
@@ -105,6 +139,7 @@ export async function assignAwb(formData) {
         shiprocket_status: "AWB Assigned",
       })
       .eq("id", orderId);
+    await logAdminActivity({ admin: admin_, action: "shiprocket_awb_assigned", entityType: "order", entityId: orderId, metadata: { courier_id: courierId || "auto" } });
   } catch (err) {
     console.error("Shiprocket AWB assignment failed:", err.message);
     await admin.from("orders").update({ shiprocket_status: `error: ${err.message}` }).eq("id", orderId);
@@ -115,7 +150,7 @@ export async function assignAwb(formData) {
 
 // Schedules courier pickup. Only meaningful once an AWB is assigned.
 export async function requestPickup(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
   const admin = createAdminClient();
 
@@ -134,6 +169,7 @@ export async function requestPickup(formData) {
         shiprocket_pickup_status: data?.pickup_status?.toString() || data?.pickup_scheduled_date || "requested",
       })
       .eq("id", orderId);
+    await logAdminActivity({ admin: admin_, action: "shiprocket_pickup_requested", entityType: "order", entityId: orderId });
   } catch (err) {
     console.error("Shiprocket pickup request failed:", err.message);
     await admin.from("orders").update({ shiprocket_pickup_status: `error: ${err.message}` }).eq("id", orderId);
@@ -143,7 +179,7 @@ export async function requestPickup(formData) {
 }
 
 export async function generateLabel(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
   const admin = createAdminClient();
 
@@ -156,6 +192,7 @@ export async function generateLabel(formData) {
     const result = await generateShiprocketLabel(order.shiprocket_shipment_id, credentials);
     if (result?.label_url) {
       await admin.from("orders").update({ shiprocket_label_url: result.label_url }).eq("id", orderId);
+      await logAdminActivity({ admin: admin_, action: "shiprocket_label_generated", entityType: "order", entityId: orderId });
     }
   } catch (err) {
     console.error("Shiprocket label generation failed:", err.message);
@@ -165,7 +202,7 @@ export async function generateLabel(formData) {
 }
 
 export async function generateInvoice(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const orderId = formData.get("id")?.toString();
   const admin = createAdminClient();
 
@@ -178,9 +215,33 @@ export async function generateInvoice(formData) {
     const result = await generateShiprocketInvoice(order.shiprocket_order_id, credentials);
     if (result?.invoice_url) {
       await admin.from("orders").update({ shiprocket_invoice_url: result.invoice_url }).eq("id", orderId);
+      await logAdminActivity({ admin: admin_, action: "shiprocket_invoice_generated", entityType: "order", entityId: orderId });
     }
   } catch (err) {
     console.error("Shiprocket invoice generation failed:", err.message);
+  }
+
+  revalidatePath(`/admin/orders/${orderId}`);
+}
+
+export async function generateManifest(formData) {
+  const admin_ = await requireAdmin();
+  const orderId = formData.get("id")?.toString();
+  const admin = createAdminClient();
+
+  const { data: order } = await admin.from("orders").select("shiprocket_shipment_id").eq("id", orderId).single();
+  if (!order?.shiprocket_shipment_id) return;
+
+  const credentials = await getShiprocketCredentials(admin);
+
+  try {
+    const result = await generateShiprocketManifest(order.shiprocket_shipment_id, credentials);
+    if (result?.manifest_url) {
+      await admin.from("orders").update({ shiprocket_manifest_url: result.manifest_url }).eq("id", orderId);
+      await logAdminActivity({ admin: admin_, action: "shiprocket_manifest_generated", entityType: "order", entityId: orderId });
+    }
+  } catch (err) {
+    console.error("Shiprocket manifest generation failed:", err.message);
   }
 
   revalidatePath(`/admin/orders/${orderId}`);

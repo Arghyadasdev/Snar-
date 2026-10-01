@@ -7,6 +7,7 @@ import {
   requestPickup,
   generateLabel,
   generateInvoice,
+  generateManifest,
   cancelShipment,
 } from "@/lib/actions/shiprocket";
 
@@ -17,6 +18,7 @@ const ACTIONS = {
   requestPickup,
   generateLabel,
   generateInvoice,
+  generateManifest,
   cancelShipment,
 };
 

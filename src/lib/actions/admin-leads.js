@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function listLeadsAdmin(search = "", status = "") {
   await requireAdmin();
@@ -70,20 +71,22 @@ function readForm(formData) {
 }
 
 export async function createLead(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const fields = readForm(formData);
   if (!fields.name) return { error: "Name is required." };
 
   const admin = createAdminClient();
-  const { error } = await admin.from("leads").insert(fields);
+  const { data, error } = await admin.from("leads").insert(fields).select("id").single();
   if (error) return { error: error.message };
+
+  await logAdminActivity({ admin: admin_, action: "lead_created", entityType: "lead", entityId: data.id, metadata: { name: fields.name } });
 
   revalidatePath("/admin/leads");
   redirect("/admin/leads");
 }
 
 export async function updateLead(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const fields = readForm(formData);
   if (!fields.name) return { error: "Name is required." };
@@ -100,12 +103,14 @@ export async function updateLead(prevState, formData) {
   const { error } = await admin.from("leads").update(updates).eq("id", id);
   if (error) return { error: error.message };
 
+  await logAdminActivity({ admin: admin_, action: "lead_updated", entityType: "lead", entityId: id, metadata: { status: fields.status } });
+
   revalidatePath("/admin/leads");
   redirect("/admin/leads");
 }
 
 export async function updateLeadStatus(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const status = formData.get("status")?.toString();
 
@@ -118,14 +123,16 @@ export async function updateLeadStatus(formData) {
     }
   }
   await admin.from("leads").update(updates).eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "lead_status_changed", entityType: "lead", entityId: id, metadata: { status } });
 
   revalidatePath("/admin/leads");
 }
 
 export async function deleteLead(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const admin = createAdminClient();
   await admin.from("leads").delete().eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "lead_deleted", entityType: "lead", entityId: id });
   revalidatePath("/admin/leads");
 }

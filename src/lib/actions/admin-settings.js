@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 const DEFAULT_SETTINGS = {
   whatsapp_number: "919875607634",
@@ -13,6 +14,7 @@ const DEFAULT_SETTINGS = {
   shiprocket_email: "",
   shiprocket_password: "",
   shiprocket_pickup_location: "",
+  shiprocket_pickup_pincode: "",
 };
 
 export async function getSettingsAdmin() {
@@ -23,7 +25,7 @@ export async function getSettingsAdmin() {
 }
 
 export async function updateSettings(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
 
   const fields = {
     whatsapp_number: formData.get("whatsappNumber")?.toString().trim(),
@@ -33,6 +35,7 @@ export async function updateSettings(prevState, formData) {
     free_shipping_threshold: Number(formData.get("freeShippingThreshold")) || 0,
     shiprocket_email: formData.get("shiprocketEmail")?.toString().trim(),
     shiprocket_pickup_location: formData.get("shiprocketPickupLocation")?.toString().trim(),
+    shiprocket_pickup_pincode: formData.get("shiprocketPickupPincode")?.toString().trim(),
   };
 
   // Only touch the stored password when a new one is typed — the field is
@@ -44,6 +47,15 @@ export async function updateSettings(prevState, formData) {
   const admin = createAdminClient();
   const { error } = await admin.from("site_settings").upsert({ id: 1, ...fields });
   if (error) return { error: error.message };
+
+  // Never log the password itself — only that it changed.
+  await logAdminActivity({
+    admin: admin_,
+    action: "settings_updated",
+    entityType: "site_settings",
+    entityId: "1",
+    metadata: { ...fields, shiprocket_password: shiprocketPassword ? "changed" : undefined },
+  });
 
   revalidatePath("/", "layout");
   return { success: "Settings saved." };

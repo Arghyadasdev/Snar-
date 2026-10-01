@@ -13,9 +13,9 @@ export async function globalAdminSearch(query) {
   const admin = createAdminClient();
   const [{ data: orders }, { data: customers }, { data: products }] = await Promise.all([
     admin
-      .from("orders")
+      .from("orders_search")
       .select("id, shipping_name, total, status")
-      .ilike("shipping_name", `%${q}%`)
+      .or(`id_text.ilike.%${q}%,shipping_name.ilike.%${q}%`)
       .order("created_at", { ascending: false })
       .limit(5),
     admin

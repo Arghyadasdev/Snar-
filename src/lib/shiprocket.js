@@ -165,3 +165,23 @@ export async function generateShiprocketInvoice(shiprocketOrderId, credentials) 
     body: JSON.stringify({ ids: [Number(shiprocketOrderId)] }),
   }, credentials);
 }
+
+// Lists couriers that can actually deliver pickupPincode -> deliveryPincode
+// for the given weight, with their rate/ETA, so an admin can pick one
+// instead of always taking Shiprocket's auto-recommended courier.
+export async function getServiceableCouriers({ pickupPincode, deliveryPincode, weight, cod = false }, credentials) {
+  const params = new URLSearchParams({
+    pickup_postcode: pickupPincode,
+    delivery_postcode: deliveryPincode,
+    weight: String(weight),
+    cod: cod ? "1" : "0",
+  });
+  return shiprocketFetch(`/courier/serviceability/?${params}`, {}, credentials);
+}
+
+export async function generateShiprocketManifest(shipmentId, credentials) {
+  return shiprocketFetch("/manifests/generate", {
+    method: "POST",
+    body: JSON.stringify({ shipment_id: [Number(shipmentId)] }),
+  }, credentials);
+}

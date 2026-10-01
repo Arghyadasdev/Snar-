@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getOrderAdmin } from "@/lib/actions/admin-orders";
 import OrderStatusSelect from "../order-status-select";
 import ShiprocketButton from "../shiprocket-button";
+import CourierPicker from "../courier-picker";
 
 export const metadata = { title: "Admin · Order — SNAR" };
 
@@ -96,12 +97,15 @@ export default async function AdminOrderDetailPage({ params }) {
                 <p style={{ color: "var(--a-muted)", fontSize: ".85rem" }}>AWB not yet assigned.</p>
               )}
 
+              {!order.awb_code && (
+                <div style={{ marginTop: ".6rem" }}>
+                  <CourierPicker orderId={order.id} />
+                </div>
+              )}
+
               <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", marginTop: ".6rem" }}>
                 {!order.awb_code && (
-                  <>
-                    <ShiprocketButton orderId={order.id} label="Assign AWB" action="assignAwb" />
-                    <ShiprocketButton orderId={order.id} label="Resync Shiprocket" action="create" />
-                  </>
+                  <ShiprocketButton orderId={order.id} label="Resync Shiprocket" action="create" />
                 )}
 
                 {order.awb_code && (
@@ -130,6 +134,14 @@ export default async function AdminOrderDetailPage({ params }) {
                       </a>
                     ) : (
                       <ShiprocketButton orderId={order.id} label="Generate Invoice" action="generateInvoice" />
+                    )}
+
+                    {order.shiprocket_manifest_url ? (
+                      <a href={order.shiprocket_manifest_url} target="_blank" rel="noopener noreferrer" className="btn-outline" style={{ padding: ".5rem 1rem" }}>
+                        Download Manifest
+                      </a>
+                    ) : (
+                      <ShiprocketButton orderId={order.id} label="Generate Manifest" action="generateManifest" />
                     )}
                   </>
                 )}

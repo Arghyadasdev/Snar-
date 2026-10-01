@@ -39,6 +39,11 @@ export default function SettingsForm({ settings }) {
       <label className="auth-label" htmlFor="shiprocketPickupLocation">Shiprocket Pickup Location Nickname</label>
       <input className="auth-input" id="shiprocketPickupLocation" name="shiprocketPickupLocation" defaultValue={settings.shiprocket_pickup_location} placeholder="Primary Warehouse" />
 
+      <label className="auth-label" htmlFor="shiprocketPickupPincode">
+        Pickup Location Pincode <span style={{ fontWeight: 400 }}>(needed for manual courier selection)</span>
+      </label>
+      <input className="auth-input" id="shiprocketPickupPincode" name="shiprocketPickupPincode" defaultValue={settings.shiprocket_pickup_pincode} placeholder="400001" />
+
       {state?.error && <p className="auth-error">{state.error}</p>}
       {state?.success && <p className="auth-success">{state.success}</p>}
 

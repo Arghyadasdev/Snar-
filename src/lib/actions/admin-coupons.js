@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { logAdminActivity } from "@/lib/actions/admin-activity";
 
 export async function listCouponsAdmin() {
   await requireAdmin();
@@ -12,7 +13,7 @@ export async function listCouponsAdmin() {
 }
 
 export async function createCoupon(prevState, formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
 
   const code = formData.get("code")?.toString().trim().toUpperCase();
   const discountType = formData.get("discountType")?.toString();
@@ -40,24 +41,28 @@ export async function createCoupon(prevState, formData) {
     return { error: error.message.includes("duplicate") ? "That coupon code already exists." : error.message };
   }
 
+  await logAdminActivity({ admin: admin_, action: "coupon_created", entityType: "coupon", entityId: code, metadata: { discountType, discountValue } });
+
   revalidatePath("/admin/coupons");
   return { success: `Coupon ${code} created.` };
 }
 
 export async function toggleCoupon(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const isActive = formData.get("isActive") === "true";
 
   const admin = createAdminClient();
   await admin.from("coupons").update({ is_active: !isActive }).eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "coupon_toggled", entityType: "coupon", entityId: id, metadata: { is_active: !isActive } });
   revalidatePath("/admin/coupons");
 }
 
 export async function deleteCoupon(formData) {
-  await requireAdmin();
+  const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
   const admin = createAdminClient();
   await admin.from("coupons").delete().eq("id", id);
+  await logAdminActivity({ admin: admin_, action: "coupon_deleted", entityType: "coupon", entityId: id });
   revalidatePath("/admin/coupons");
 }
