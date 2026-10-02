@@ -13,6 +13,12 @@ const DEFAULT_SETTINGS = {
   free_shipping_threshold: 999,
   shiprocket_email: "",
   shiprocket_password: "",
+  seller_business_name: "",
+  seller_gstin: "",
+  seller_pan: "",
+  seller_address: "",
+  seller_state: "",
+  gst_rate_percent: 12,
 };
 
 export async function getSettingsAdmin() {
@@ -32,6 +38,12 @@ export async function updateSettings(prevState, formData) {
     contact_email: formData.get("contactEmail")?.toString().trim(),
     free_shipping_threshold: Number(formData.get("freeShippingThreshold")) || 0,
     shiprocket_email: formData.get("shiprocketEmail")?.toString().trim(),
+    seller_business_name: formData.get("sellerBusinessName")?.toString().trim(),
+    seller_gstin: formData.get("sellerGstin")?.toString().trim().toUpperCase(),
+    seller_pan: formData.get("sellerPan")?.toString().trim().toUpperCase(),
+    seller_address: formData.get("sellerAddress")?.toString().trim(),
+    seller_state: formData.get("sellerState")?.toString().trim(),
+    gst_rate_percent: Number(formData.get("gstRatePercent")) || 12,
   };
 
   // Only touch the stored password when a new one is typed — the field is

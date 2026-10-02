@@ -67,6 +67,14 @@ export default async function OrderDetailPage({ params }) {
             )}
           </p>
 
+          {order.invoice_number && (
+            <p style={{ marginTop: ".6rem" }}>
+              <a href={`/api/invoices/${order.id}`} className="btn-outline" style={{ padding: ".5rem 1rem" }}>
+                Download Invoice
+              </a>
+            </p>
+          )}
+
           {order.awb_code && (
             <>
               <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Tracking</div>

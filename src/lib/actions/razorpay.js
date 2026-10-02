@@ -6,6 +6,7 @@ import { getRazorpayClient, verifyRazorpaySignature } from "@/lib/razorpay";
 import { logCustomerActivity } from "@/lib/actions/customer-activity";
 import { syncOrderToShiprocket } from "@/lib/actions/shiprocket";
 import { sendOrderConfirmationEmail } from "@/lib/email";
+import { generateInvoiceForOrder } from "@/lib/actions/invoice";
 
 function validateShipping(shipping) {
   for (const [key, value] of Object.entries(shipping)) {
@@ -101,6 +102,7 @@ export async function verifyAndPlaceOrder({ shipping, couponCode, razorpayOrderI
   // Best-effort: never let a Shiprocket outage or missing credentials block
   // an already-paid order. Failure is recorded on the order for admin retry.
   await syncOrderToShiprocket(orderId);
+  await generateInvoiceForOrder(orderId);
 
   const { data: placedOrder } = await supabase.from("orders").select("*").eq("id", orderId).single();
   const { data: items } = await supabase

@@ -90,6 +90,8 @@ async function readProductForm(formData) {
       .map((s) => s.trim())
       .filter(Boolean),
     specifications: parseSpecifications(specsRaw),
+    sku: formData.get("sku")?.toString().trim() || null,
+    hsn_code: formData.get("hsnCode")?.toString().trim() || null,
   };
 }
 

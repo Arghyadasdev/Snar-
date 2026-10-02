@@ -56,6 +56,17 @@ export default function ProductForm({ action, categories, product }) {
       <label className="auth-label" htmlFor="stock">Stock</label>
       <input className="auth-input" id="stock" name="stock" type="number" defaultValue={product?.stock ?? 0} />
 
+      <div className="form-row-2">
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="sku">SKU <span style={{ fontWeight: 400 }}>(optional, shown on invoices)</span></label>
+          <input className="auth-input" id="sku" name="sku" defaultValue={product?.sku} placeholder="TSH-RED-M" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="hsnCode">HSN Code <span style={{ fontWeight: 400 }}>(optional)</span></label>
+          <input className="auth-input" id="hsnCode" name="hsnCode" defaultValue={product?.hsn_code} placeholder="6109" />
+        </div>
+      </div>
+
       <label className="auth-label" htmlFor="specifications">Product Details (one per line, "Label: Value")</label>
       <textarea
         className="auth-input"

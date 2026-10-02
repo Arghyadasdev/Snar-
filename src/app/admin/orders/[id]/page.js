@@ -71,6 +71,16 @@ export default async function AdminOrderDetailPage({ params }) {
             </p>
           )}
 
+          {order.invoice_number ? (
+            <p style={{ marginTop: ".6rem" }}>
+              <a href={`/api/invoices/${order.id}`} className="btn-outline" style={{ padding: ".5rem 1rem" }}>
+                Download Invoice ({order.invoice_number})
+              </a>
+            </p>
+          ) : (
+            <p style={{ fontSize: ".8rem", color: "var(--a-muted)", marginTop: ".3rem" }}>No invoice generated yet.</p>
+          )}
+
           <div className="order-shipping-title" style={{ marginTop: "1.4rem" }}>Status</div>
           <OrderStatusSelect orderId={order.id} status={order.status} />
 

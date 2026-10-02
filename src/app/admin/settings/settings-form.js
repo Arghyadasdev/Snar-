@@ -41,6 +41,39 @@ export default function SettingsForm({ settings }) {
         Pickup location is managed as a <Link href="/admin/warehouses">Warehouse</Link> now, not here.
       </p>
 
+      <h3 style={{ marginTop: "1.6rem", marginBottom: ".4rem" }}>GST / Invoicing</h3>
+      <p className="shop-sub" style={{ marginBottom: ".8rem" }}>
+        Used on every order&apos;s tax invoice (Admin → Orders → Download Invoice).
+      </p>
+
+      <label className="auth-label" htmlFor="sellerBusinessName">Business Name</label>
+      <input className="auth-input" id="sellerBusinessName" name="sellerBusinessName" defaultValue={settings.seller_business_name} placeholder="SNAR Activewear" />
+
+      <label className="auth-label" htmlFor="sellerAddress">Business Address</label>
+      <input className="auth-input" id="sellerAddress" name="sellerAddress" defaultValue={settings.seller_address} />
+
+      <div className="form-row-2">
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="sellerState">Business State</label>
+          <input className="auth-input" id="sellerState" name="sellerState" defaultValue={settings.seller_state} placeholder="West Bengal" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="gstRatePercent">GST Rate (%)</label>
+          <input className="auth-input" id="gstRatePercent" name="gstRatePercent" type="number" step="0.1" defaultValue={settings.gst_rate_percent} />
+        </div>
+      </div>
+
+      <div className="form-row-2">
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="sellerGstin">GSTIN</label>
+          <input className="auth-input" id="sellerGstin" name="sellerGstin" defaultValue={settings.seller_gstin} placeholder="19ABCDE1234F1Z5" />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label className="auth-label" htmlFor="sellerPan">PAN</label>
+          <input className="auth-input" id="sellerPan" name="sellerPan" defaultValue={settings.seller_pan} placeholder="ABCDE1234F" />
+        </div>
+      </div>
+
       {state?.error && <p className="auth-error">{state.error}</p>}
       {state?.success && <p className="auth-success">{state.success}</p>}
 
