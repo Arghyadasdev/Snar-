@@ -3,7 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 // Shiprocket calls this on every shipment status change (AWB assigned,
 // picked up, out for delivery, delivered, RTO, ...). Configure the same
 // URL + secret in Shiprocket → Settings → API → Webhook, sent back as the
-// `x-api-key` header.
+// `x-api-key` header. Path intentionally avoids "shiprocket"/"sr"/"kr" —
+// Shiprocket's own webhook URL field rejects those as keywords.
 const STATUS_MAP = {
   "AWB ASSIGNED": "processing",
   "PICKUP SCHEDULED": "processing",
