@@ -60,6 +60,7 @@ export async function updateVariantStock(formData) {
   const admin = createAdminClient();
   await admin.from("product_variants").update({ stock }).eq("id", id);
   revalidatePath(`/admin/products/${productId}/edit`);
+  revalidatePath("/admin/inventory");
 }
 
 export async function deleteVariant(formData) {

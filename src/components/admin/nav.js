@@ -5,6 +5,8 @@ export const ADMIN_NAV = [
   { label: "Coupons", href: "/admin/coupons", icon: "discount", section: "Sales" },
   { label: "Products", href: "/admin/products", icon: "tag", section: "Catalog" },
   { label: "Categories", href: "/admin/categories", icon: "grid2", section: "Catalog" },
+  { label: "Inventory", href: "/admin/inventory", icon: "bag", section: "Catalog" },
+  { label: "Warehouses", href: "/admin/warehouses", icon: "warehouse", section: "Catalog" },
   { label: "Customers", href: "/admin/customers", icon: "users", section: "CRM" },
   { label: "Leads", href: "/admin/leads", icon: "leads", section: "CRM" },
   { label: "Homepage", href: "/admin/homepage", icon: "image", section: "Content" },

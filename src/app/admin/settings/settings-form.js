@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { updateSettings } from "@/lib/actions/admin-settings";
 
 export default function SettingsForm({ settings }) {
@@ -36,13 +37,9 @@ export default function SettingsForm({ settings }) {
       </label>
       <input className="auth-input" id="shiprocketPassword" name="shiprocketPassword" type="password" placeholder={settings.shiprocket_password ? "••••••••" : ""} />
 
-      <label className="auth-label" htmlFor="shiprocketPickupLocation">Shiprocket Pickup Location Nickname</label>
-      <input className="auth-input" id="shiprocketPickupLocation" name="shiprocketPickupLocation" defaultValue={settings.shiprocket_pickup_location} placeholder="Primary Warehouse" />
-
-      <label className="auth-label" htmlFor="shiprocketPickupPincode">
-        Pickup Location Pincode <span style={{ fontWeight: 400 }}>(needed for manual courier selection)</span>
-      </label>
-      <input className="auth-input" id="shiprocketPickupPincode" name="shiprocketPickupPincode" defaultValue={settings.shiprocket_pickup_pincode} placeholder="400001" />
+      <p className="shop-sub">
+        Pickup location is managed as a <Link href="/admin/warehouses">Warehouse</Link> now, not here.
+      </p>
 
       {state?.error && <p className="auth-error">{state.error}</p>}
       {state?.success && <p className="auth-success">{state.success}</p>}

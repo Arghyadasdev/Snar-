@@ -16,21 +16,21 @@ import {
 } from "@/lib/shiprocket";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
 
-// Credentials can be set from Admin -> Settings instead of env vars +
-// redeploy. Empty columns mean "not set from the UI"; lib/shiprocket.js
-// falls back to SHIPROCKET_EMAIL/PASSWORD/PICKUP_LOCATION when undefined.
+// API login can be set from Admin -> Settings instead of env vars +
+// redeploy. Pickup location/pincode come from the Warehouse (Admin ->
+// Warehouses) instead of site_settings — a warehouse is what Shiprocket
+// actually ships from. Falls back to SHIPROCKET_* env vars when unset.
 async function getShiprocketCredentials(admin) {
-  const { data } = await admin
-    .from("site_settings")
-    .select("shiprocket_email, shiprocket_password, shiprocket_pickup_location, shiprocket_pickup_pincode")
-    .eq("id", 1)
-    .single();
+  const [{ data: settings }, { data: warehouse }] = await Promise.all([
+    admin.from("site_settings").select("shiprocket_email, shiprocket_password").eq("id", 1).single(),
+    admin.from("warehouses").select("name, pincode").eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle(),
+  ]);
 
   return {
-    email: data?.shiprocket_email || undefined,
-    password: data?.shiprocket_password || undefined,
-    pickupLocation: data?.shiprocket_pickup_location || undefined,
-    pickupPincode: data?.shiprocket_pickup_pincode || undefined,
+    email: settings?.shiprocket_email || undefined,
+    password: settings?.shiprocket_password || undefined,
+    pickupLocation: warehouse?.name || undefined,
+    pickupPincode: warehouse?.pincode || undefined,
   };
 }
 

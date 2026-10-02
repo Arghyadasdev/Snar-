@@ -13,8 +13,6 @@ const DEFAULT_SETTINGS = {
   free_shipping_threshold: 999,
   shiprocket_email: "",
   shiprocket_password: "",
-  shiprocket_pickup_location: "",
-  shiprocket_pickup_pincode: "",
 };
 
 export async function getSettingsAdmin() {
@@ -34,8 +32,6 @@ export async function updateSettings(prevState, formData) {
     contact_email: formData.get("contactEmail")?.toString().trim(),
     free_shipping_threshold: Number(formData.get("freeShippingThreshold")) || 0,
     shiprocket_email: formData.get("shiprocketEmail")?.toString().trim(),
-    shiprocket_pickup_location: formData.get("shiprocketPickupLocation")?.toString().trim(),
-    shiprocket_pickup_pincode: formData.get("shiprocketPickupPincode")?.toString().trim(),
   };
 
   // Only touch the stored password when a new one is typed — the field is
