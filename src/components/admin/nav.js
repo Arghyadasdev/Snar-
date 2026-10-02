@@ -1,6 +1,7 @@
 export const ADMIN_NAV = [
   { label: "Dashboard", href: "/admin", icon: "grid", section: "Overview" },
   { label: "Orders", href: "/admin/orders", icon: "bag", section: "Sales" },
+  { label: "Invoices", href: "/admin/invoices", icon: "invoice", section: "Sales" },
   { label: "Returns", href: "/admin/returns", icon: "bag", section: "Sales" },
   { label: "Coupons", href: "/admin/coupons", icon: "discount", section: "Sales" },
   { label: "Products", href: "/admin/products", icon: "tag", section: "Catalog" },
