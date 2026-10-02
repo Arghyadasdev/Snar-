@@ -13,6 +13,11 @@ function validateShipping(shipping) {
       return `Please fill in your ${key}.`;
     }
   }
+  // Indian mobile number: 10 digits, starts 6-9. Courier APIs (Shiprocket)
+  // reject anything else — catch it before payment, not after.
+  if (!/^[6-9]\d{9}$/.test(shipping.phone.trim())) {
+    return "Please enter a valid 10-digit phone number.";
+  }
   return null;
 }
 

@@ -87,6 +87,13 @@ export default function CheckoutForm() {
       state: fields.state.trim(),
       zip: fields.zip.trim(),
     };
+
+    if (!/^[6-9]\d{9}$/.test(shipping.phone)) {
+      setError("Please enter a valid 10-digit phone number.");
+      setPending(false);
+      return;
+    }
+
     const couponCode = fields.couponCode.trim();
 
     const orderResult = await createRazorpayOrder(shipping, couponCode);
@@ -154,7 +161,16 @@ export default function CheckoutForm() {
         <input className="auth-input" id="name" value={fields.name} onChange={update("name")} required />
 
         <label className="auth-label" htmlFor="phone">Phone</label>
-        <input className="auth-input" id="phone" value={fields.phone} onChange={update("phone")} required />
+        <input
+          className="auth-input"
+          id="phone"
+          type="tel"
+          inputMode="numeric"
+          maxLength={10}
+          value={fields.phone}
+          onChange={(e) => setFields((f) => ({ ...f, phone: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
+          required
+        />
 
         <label className="auth-label" htmlFor="address">Address</label>
         <input className="auth-input" id="address" value={fields.address} onChange={update("address")} required />
