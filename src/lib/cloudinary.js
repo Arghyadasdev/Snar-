@@ -22,3 +22,19 @@ export async function uploadProductImage(file) {
 
   return result.secure_url;
 }
+
+// "auto" resource type so a receipt can be an image or a PDF.
+export async function uploadReceiptFile(file) {
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+
+  const result = await new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "snar/receipts", resource_type: "auto" },
+      (error, result) => (error ? reject(error) : resolve(result))
+    );
+    stream.end(buffer);
+  });
+
+  return result.secure_url;
+}
