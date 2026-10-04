@@ -13,6 +13,8 @@ export const ADMIN_NAV = [
   { label: "Recurring", href: "/admin/recurring-expenses", icon: "activity", section: "Expenses" },
   { label: "Vendors", href: "/admin/vendors", icon: "leads", section: "Expenses" },
   { label: "Categories", href: "/admin/expense-categories", icon: "grid2", section: "Expenses" },
+  { label: "Banking", href: "/admin/banking", icon: "bank", section: "Finance" },
+  { label: "Reports", href: "/admin/reports", icon: "reports", section: "Finance" },
   { label: "Customers", href: "/admin/customers", icon: "users", section: "CRM" },
   { label: "Leads", href: "/admin/leads", icon: "leads", section: "CRM" },
   { label: "Homepage", href: "/admin/homepage", icon: "image", section: "Content" },
