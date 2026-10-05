@@ -5,6 +5,7 @@ import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { computeSegment } from "@/lib/customer-segment";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
+import { ilikePattern } from "@/lib/supabase/filters";
 
 export async function listCustomersAdmin(search = "", status = "", segment = "") {
   await requireAdmin();
@@ -15,7 +16,8 @@ export async function listCustomersAdmin(search = "", status = "", segment = "")
     .order("created_at", { ascending: false });
 
   if (search.trim()) {
-    query = query.or(`full_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+    const pattern = ilikePattern(search.trim());
+    query = query.or(`full_name.ilike.${pattern},email.ilike.${pattern}`);
   }
   if (status) {
     query = query.eq("status", status);

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
+import { ilikePattern } from "@/lib/supabase/filters";
 
 export async function listSkusAdmin(search = "") {
   await requireAdmin();
@@ -15,7 +16,8 @@ export async function listSkusAdmin(search = "") {
     .order("name", { ascending: true });
 
   if (search.trim()) {
-    query = query.or(`name.ilike.%${search.trim()}%,sku.ilike.%${search.trim()}%,hsn_code.ilike.%${search.trim()}%`);
+    const pattern = ilikePattern(search.trim());
+    query = query.or(`name.ilike.${pattern},sku.ilike.${pattern},hsn_code.ilike.${pattern}`);
   }
 
   const { data } = await query;

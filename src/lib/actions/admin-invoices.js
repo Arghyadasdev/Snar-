@@ -2,6 +2,7 @@
 
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ilikePattern } from "@/lib/supabase/filters";
 
 export async function listInvoicesAdmin(search = "") {
   await requireAdmin();
@@ -14,7 +15,8 @@ export async function listInvoicesAdmin(search = "") {
     .order("invoice_date", { ascending: false });
 
   if (search.trim()) {
-    query = query.or(`invoice_number.ilike.%${search.trim()}%,shipping_name.ilike.%${search.trim()}%`);
+    const pattern = ilikePattern(search.trim());
+    query = query.or(`invoice_number.ilike.${pattern},shipping_name.ilike.${pattern}`);
   }
 
   const { data } = await query;

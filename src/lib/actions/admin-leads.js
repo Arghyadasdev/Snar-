@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
+import { ilikePattern } from "@/lib/supabase/filters";
 
 export async function listLeadsAdmin(search = "", status = "") {
   await requireAdmin();
@@ -12,7 +13,8 @@ export async function listLeadsAdmin(search = "", status = "") {
   let query = admin.from("leads").select("*").order("created_at", { ascending: false });
 
   if (search.trim()) {
-    query = query.or(`name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%,phone.ilike.%${search.trim()}%`);
+    const pattern = ilikePattern(search.trim());
+    query = query.or(`name.ilike.${pattern},email.ilike.${pattern},phone.ilike.${pattern}`);
   }
   if (status) {
     query = query.eq("status", status);

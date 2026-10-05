@@ -5,13 +5,15 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAdminActivity } from "@/lib/actions/admin-activity";
+import { ilikePattern } from "@/lib/supabase/filters";
 
 export async function listVendorsAdmin(search = "") {
   await requireAdmin();
   const admin = createAdminClient();
   let query = admin.from("vendors").select("*").order("name");
   if (search.trim()) {
-    query = query.or(`name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+    const pattern = ilikePattern(search.trim());
+    query = query.or(`name.ilike.${pattern},email.ilike.${pattern}`);
   }
   const { data } = await query;
   return data || [];
