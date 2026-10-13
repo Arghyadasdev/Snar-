@@ -2,25 +2,17 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-// Shows once per browser tab session — reopening the same tab won't
-// re-trigger it, but a fresh tab/visit will.
-const SEEN_KEY = "snar-launch-poster-seen";
-
 export default function LaunchPosterPopup() {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    try {
-      if (sessionStorage.getItem(SEEN_KEY)) return;
-    } catch {}
     const t = setTimeout(() => setOpen(true), 400);
     return () => clearTimeout(t);
   }, []);
 
   const close = () => {
     setClosing(true);
-    try { sessionStorage.setItem(SEEN_KEY, "1"); } catch {}
     setTimeout(() => setOpen(false), 250);
   };
 
