@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import ProductGrid from "@/components/ProductGrid";
+import LaunchPosterPopup from "@/components/ui/launch-poster-popup";
 
 const CinematicFooter = dynamic(
   () => import("@/components/ui/motion-footer").then(m => ({ default: m.CinematicFooter })),
@@ -90,6 +91,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
 
   return (
     <>
+      <LaunchPosterPopup />
       {/* HERO */}
       <section className="hero">
         <div className="hero-slides" style={{ transform: `translateX(-${heroSlide * 100}%)` }}>
