@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ADMIN_NAV } from "./nav";
@@ -26,15 +27,48 @@ const ICONS = {
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   return (
-    <aside className="admin-sidebar">
-      <Link href="/" className="admin-sidebar-logo">
-        <img src="/logo.png" alt="SNAR" />
-        <span>SNAR</span>
-      </Link>
+    <>
+      <div className="admin-mobile-bar">
+        <Link href="/" className="admin-sidebar-logo">
+          <img src="/logo.png" alt="SNAR" />
+          <span>SNAR</span>
+        </Link>
+        <button
+          type="button"
+          className="admin-mobile-toggle"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? "Close menu" : "Open menu"}
+          aria-expanded={open}
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {open ? (
+              <>
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </>
+            ) : (
+              <>
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </>
+            )}
+          </svg>
+        </button>
+      </div>
 
-      <nav className="admin-sidebar-nav">
+      {open && <div className="admin-sidebar-backdrop" onClick={() => setOpen(false)} />}
+
+      <aside className={`admin-sidebar${open ? " open" : ""}`}>
+        <Link href="/" className="admin-sidebar-logo">
+          <img src="/logo.png" alt="SNAR" />
+          <span>SNAR</span>
+        </Link>
+
+        <nav className="admin-sidebar-nav">
         {ADMIN_NAV.map((item, index) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           const showHeader = index === 0 || item.section !== ADMIN_NAV[index - 1].section;
@@ -42,7 +76,7 @@ export default function AdminSidebar() {
           return (
             <div key={item.href}>
               {showHeader && <div className="admin-nav-section">{item.section}</div>}
-              <Link href={item.href} className={`admin-nav-link${active ? " active" : ""}`}>
+              <Link href={item.href} className={`admin-nav-link${active ? " active" : ""}`} onClick={() => setOpen(false)}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   {ICONS[item.icon]}
                 </svg>
@@ -57,6 +91,7 @@ export default function AdminSidebar() {
         <div className="admin-sidebar-brand">SNAR.CO.IN</div>
         <div className="admin-sidebar-tag">Premium Activewear</div>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ProductGalleryView({ images, productName }) {
   const [active, setActive] = useState(0);
@@ -35,7 +36,7 @@ export default function ProductGalleryView({ images, productName }) {
         )}
 
         <div className="pd2-main" onClick={() => setLightbox(true)}>
-          <img src={images[active]} alt={productName} loading="eager" />
+          <Image src={images[active]} alt={productName} fill sizes="(max-width: 1100px) 90vw, 45vw" priority />
           <span className="pd2-zoom-btn" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
