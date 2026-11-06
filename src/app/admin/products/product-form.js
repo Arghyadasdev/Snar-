@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { deleteProductImage } from "@/lib/actions/admin-product-images";
 
@@ -40,11 +40,32 @@ export default function ProductForm({ action, categories, product, images = [] }
   const [price, setPrice] = useState(product?.price ?? "");
   const [compareAtPrice, setCompareAtPrice] = useState(product?.compare_at_price ?? "");
   const [imageUrl, setImageUrl] = useState(product?.image_url || "");
-  const [photoPreviews, setPhotoPreviews] = useState([]);
+
+  // Click-to-add photo slots — the hidden file input's selection replaces
+  // itself every time it's opened, so we keep our own running list and
+  // rewrite the input's files (via DataTransfer) after every pick so the
+  // form submits everything collected across multiple picker opens.
+  const fileInputRef = useRef(null);
+  const [newFiles, setNewFiles] = useState([]);
+  const photoPreviews = useMemo(() => newFiles.map((f) => URL.createObjectURL(f)), [newFiles]);
+
+  function syncInputFiles(files) {
+    const dt = new DataTransfer();
+    files.forEach((f) => dt.items.add(f));
+    if (fileInputRef.current) fileInputRef.current.files = dt.files;
+  }
 
   function onPhotosChange(e) {
-    const files = Array.from(e.target.files || []);
-    setPhotoPreviews(files.map((f) => URL.createObjectURL(f)));
+    const picked = Array.from(e.target.files || []);
+    const merged = [...newFiles, ...picked];
+    setNewFiles(merged);
+    syncInputFiles(merged);
+  }
+
+  function removeNewFile(idx) {
+    const merged = newFiles.filter((_, i) => i !== idx);
+    setNewFiles(merged);
+    syncInputFiles(merged);
   }
 
   const coverPreview = photoPreviews[0] || imageUrl;
@@ -103,45 +124,76 @@ export default function ProductForm({ action, categories, product, images = [] }
         </div>
 
         <label className="auth-label">Photos</label>
-
-        {images.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", marginBottom: ".7rem" }}>
-            {images.map((img) => (
-              <div key={img.id} style={{ position: "relative" }}>
-                <img src={img.image_url} alt="" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" }} />
-                <button
-                  type="button"
-                  aria-label="Remove photo"
-                  onClick={async () => {
-                    const fd = new FormData();
-                    fd.append("id", img.id);
-                    fd.append("productId", product?.id || "");
-                    await deleteProductImage(fd);
-                    router.refresh();
-                  }}
-                  style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".7rem", lineHeight: 1, cursor: "pointer" }}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <input className="auth-input" id="imageFiles" name="imageFiles" type="file" accept="image/*" multiple onChange={onPhotosChange} />
-        <p style={{ color: "var(--muted, #999)", fontSize: ".78rem", margin: ".4rem 0 0" }}>
-          {images.length === 0
-            ? "Pick several at once — the first one becomes the main photo."
-            : "Pick more to add to the gallery above."}
+        <p style={{ color: "var(--muted, #999)", fontSize: ".78rem", margin: "0 0 .6rem" }}>
+          Click a box to add a photo — add as many as you want, one at a time or several at once.
+          {images.length === 0 && newFiles.length === 0 && " The first photo becomes the main photo."}
         </p>
 
-        {photoPreviews.length > 0 && (
-          <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem", marginTop: ".7rem" }}>
-            {photoPreviews.map((src, i) => (
-              <img key={src} src={src} alt="" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", outline: i === 0 && images.length === 0 ? "2px solid var(--ac, #00C4D4)" : "none" }} />
-            ))}
-          </div>
-        )}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: ".6rem" }}>
+          {images.map((img) => (
+            <div key={img.id} style={{ position: "relative", width: "80px", height: "80px" }}>
+              <img src={img.image_url} alt="" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" }} />
+              <button
+                type="button"
+                aria-label="Remove photo"
+                onClick={async () => {
+                  const fd = new FormData();
+                  fd.append("id", img.id);
+                  fd.append("productId", product?.id || "");
+                  await deleteProductImage(fd);
+                  router.refresh();
+                }}
+                style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".7rem", lineHeight: 1, cursor: "pointer" }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          {photoPreviews.map((src, i) => (
+            <div key={src} style={{ position: "relative", width: "80px", height: "80px" }}>
+              <img
+                src={src}
+                alt=""
+                style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px", outline: i === 0 && images.length === 0 ? "2px solid var(--ac, #00C4D4)" : "none" }}
+              />
+              <button
+                type="button"
+                aria-label="Remove photo"
+                onClick={() => removeNewFile(i)}
+                style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".7rem", lineHeight: 1, cursor: "pointer" }}
+              >
+                ×
+              </button>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              width: "80px", height: "80px", borderRadius: "8px",
+              border: "2px dashed var(--border, #ccc)", background: "none",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              color: "var(--muted, #999)", fontSize: "1.6rem", cursor: "pointer", lineHeight: 1,
+            }}
+            aria-label="Add photo"
+          >
+            +
+            <span style={{ fontSize: ".65rem", marginTop: ".2rem" }}>Add</span>
+          </button>
+        </div>
+
+        <input
+          ref={fileInputRef}
+          id="imageFiles"
+          name="imageFiles"
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={onPhotosChange}
+          style={{ display: "none" }}
+        />
 
         <label className="auth-label" htmlFor="imageUrl" style={{ marginTop: "1rem" }}>or Image URL / path (e.g. /cat_tshirt.png) — used if no photo uploaded above</label>
         <input className="auth-input" id="imageUrl" name="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="/cat_tshirt.png" />
