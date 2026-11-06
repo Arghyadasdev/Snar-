@@ -1,5 +1,5 @@
 import ProductGrid from "@/components/ProductGrid";
-import { listProductsByCategory } from "@/lib/data/products";
+import { listProductsByCategoryTree } from "@/lib/data/products";
 
 export const metadata = {
   title: "Women's Collection — SNAR",
@@ -7,7 +7,7 @@ export const metadata = {
 };
 
 export default async function WomenPage() {
-  const products = await listProductsByCategory("women");
+  const products = await listProductsByCategoryTree("women");
 
   return (
     <div className="shop-page">

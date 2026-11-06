@@ -14,6 +14,22 @@ function slugify(name) {
     .replace(/(^-|-$)/g, "");
 }
 
+// Men / Women / Accessories / Collections are the fixed main categories
+// seeded by supabase/fix-gender-categories.sql — locked from here so the
+// site nav always has something to point at.
+const PROTECTED_ROOT_SLUGS = ["men", "women", "accessories", "collections"];
+
+async function isProtectedRoot(admin, id) {
+  const { data } = await admin.from("categories").select("slug, parent_id").eq("id", id).maybeSingle();
+  return !!data && data.parent_id === null && PROTECTED_ROOT_SLUGS.includes(data.slug);
+}
+
+async function isValidRootParent(admin, parentId) {
+  if (!parentId) return false;
+  const { data } = await admin.from("categories").select("slug, parent_id").eq("id", parentId).maybeSingle();
+  return !!data && data.parent_id === null && PROTECTED_ROOT_SLUGS.includes(data.slug);
+}
+
 export async function listAllCategoriesAdmin() {
   await requireAdmin();
   const admin = createAdminClient();
@@ -41,9 +57,14 @@ export async function createCategory(prevState, formData) {
   }
 
   const admin = createAdminClient();
+
+  if (!(await isValidRootParent(admin, parentId))) {
+    return { error: "Choose Men, Women, Accessories or Collections as the main category." };
+  }
+
   const { data, error } = await admin
     .from("categories")
-    .insert({ name, slug: slugify(name), parent_id: parentId || null })
+    .insert({ name, slug: slugify(name), parent_id: parentId })
     .select("id")
     .single();
 
@@ -72,9 +93,17 @@ export async function updateCategory(prevState, formData) {
   }
 
   const admin = createAdminClient();
+
+  if (await isProtectedRoot(admin, id)) {
+    return { error: "Men, Women, Accessories and Collections are fixed and can't be edited." };
+  }
+  if (!(await isValidRootParent(admin, parentId))) {
+    return { error: "Choose Men, Women, Accessories or Collections as the main category." };
+  }
+
   const { error } = await admin
     .from("categories")
-    .update({ name, parent_id: parentId || null })
+    .update({ name, parent_id: parentId })
     .eq("id", id);
 
   if (error) {
@@ -93,6 +122,9 @@ export async function deleteCategory(formData) {
   const id = formData.get("id")?.toString();
 
   const admin = createAdminClient();
+
+  if (await isProtectedRoot(admin, id)) return;
+
   await admin.from("categories").delete().eq("id", id);
   await logAdminActivity({ admin: admin_, action: "category_deleted", entityType: "category", entityId: id });
 
