@@ -30,17 +30,16 @@ export async function getProductAdmin(id) {
   return data;
 }
 
+// Raw tree, not a flattened label list — the product form renders Main
+// Category and Sub-category as two separate, cascading selects.
 export async function listCategoriesAdmin() {
   await requireAdmin();
   const admin = createAdminClient();
   const { data } = await admin
     .from("categories")
-    .select("id, name, parent:categories!parent_id(name)")
+    .select("id, name, parent_id")
     .order("name");
-  return (data || []).map((c) => ({
-    id: c.id,
-    name: c.parent ? `${c.parent.name} / ${c.name}` : c.name,
-  }));
+  return data || [];
 }
 
 function slugify(name) {
@@ -51,19 +50,25 @@ function slugify(name) {
     .replace(/(^-|-$)/g, "");
 }
 
-// "S, M:1100, L:1200, XL" — a size alone uses the product's base price;
-// "size:price" overrides the price for that size only.
+// "S, M:1100, L:1200:5, XL::0" — size alone uses the product's base price
+// and overall stock; "size:price" overrides price; "size:price:stock" also
+// caps that size's own stock (0 = shows as sold out on the product page).
+// Either field can be left blank (e.g. "M::5" = base price, 5 in stock).
 function parseSizes(raw) {
   return (raw || "")
     .split(",")
     .map((entry) => entry.trim())
     .filter(Boolean)
     .map((entry) => {
-      const idx = entry.indexOf(":");
-      if (idx === -1) return { size: entry, price: null };
-      const size = entry.slice(0, idx).trim();
-      const price = Number(entry.slice(idx + 1).trim());
-      return { size, price: Number.isFinite(price) ? price : null };
+      const [sizePart, pricePart, stockPart] = entry.split(":");
+      const size = sizePart?.trim();
+      const price = pricePart?.trim() ? Number(pricePart.trim()) : null;
+      const stock = stockPart?.trim() ? Number(stockPart.trim()) : null;
+      return {
+        size,
+        price: Number.isFinite(price) ? price : null,
+        stock: Number.isFinite(stock) ? stock : null,
+      };
     })
     .filter((s) => s.size);
 }
@@ -81,15 +86,35 @@ function parseSpecifications(raw) {
     .filter(Boolean);
 }
 
-async function readProductForm(formData) {
+// One multi-select file input covers both the cover photo and the gallery:
+// the first file picked becomes the product's main image, any further ones
+// go straight into product_images.
+async function uploadProductPhotos(formData) {
+  const files = formData.getAll("imageFiles").filter((f) => f instanceof File && f.size > 0);
+  const urls = await Promise.all(files.map((file) => uploadProductImage(file)));
+  return { coverUrl: urls[0] || null, galleryUrls: urls.slice(1) };
+}
+
+async function appendGalleryImages(admin, productId, urls) {
+  if (urls.length === 0) return;
+  const { data: existing } = await admin
+    .from("product_images")
+    .select("sort_order")
+    .eq("product_id", productId)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  let nextSortOrder = (existing?.sort_order ?? -1) + 1;
+  await admin.from("product_images").insert(
+    urls.map((image_url) => ({ product_id: productId, image_url, sort_order: nextSortOrder++ }))
+  );
+}
+
+function readProductForm(formData, coverUrl) {
   const sizesRaw = formData.get("sizes")?.toString() || "";
   const specsRaw = formData.get("specifications")?.toString() || "";
 
-  let imageUrl = formData.get("imageUrl")?.toString().trim() || "";
-  const imageFile = formData.get("imageFile");
-  if (imageFile instanceof File && imageFile.size > 0) {
-    imageUrl = await uploadProductImage(imageFile);
-  }
+  const imageUrl = coverUrl || formData.get("imageUrl")?.toString().trim() || "";
 
   return {
     name: formData.get("name")?.toString().trim(),
@@ -111,10 +136,11 @@ async function readProductForm(formData) {
 
 export async function createProduct(prevState, formData) {
   const admin_ = await requireAdmin();
-  const fields = await readProductForm(formData);
+  const { coverUrl, galleryUrls } = await uploadProductPhotos(formData);
+  const fields = readProductForm(formData, coverUrl);
 
   if (!fields.name || !fields.price || !fields.category_id || !fields.image_url) {
-    return { error: "Name, price, category, and an image (upload or URL) are required." };
+    return { error: "Name, price, category, and at least one photo (upload or URL) are required." };
   }
 
   const admin = createAdminClient();
@@ -128,14 +154,7 @@ export async function createProduct(prevState, formData) {
     return { error: error.message };
   }
 
-  const galleryFiles = formData.getAll("galleryFiles").filter((f) => f instanceof File && f.size > 0);
-  if (galleryFiles.length > 0) {
-    const imageUrls = await Promise.all(galleryFiles.map((file) => uploadProductImage(file)));
-    await admin.from("product_images").insert(
-      imageUrls.map((image_url, i) => ({ product_id: data.id, image_url, sort_order: i }))
-    );
-  }
-
+  await appendGalleryImages(admin, data.id, galleryUrls);
   await logAdminActivity({ admin: admin_, action: "product_created", entityType: "product", entityId: data.id, metadata: { name: fields.name, price: fields.price } });
 
   revalidatePath("/admin/products");
@@ -146,10 +165,11 @@ export async function createProduct(prevState, formData) {
 export async function updateProduct(prevState, formData) {
   const admin_ = await requireAdmin();
   const id = formData.get("id")?.toString();
-  const fields = await readProductForm(formData);
+  const { coverUrl, galleryUrls } = await uploadProductPhotos(formData);
+  const fields = readProductForm(formData, coverUrl);
 
   if (!fields.name || !fields.price || !fields.category_id || !fields.image_url) {
-    return { error: "Name, price, category, and an image (upload or URL) are required." };
+    return { error: "Name, price, category, and at least one photo (upload or URL) are required." };
   }
 
   const admin = createAdminClient();
@@ -159,6 +179,7 @@ export async function updateProduct(prevState, formData) {
     return { error: error.message };
   }
 
+  await appendGalleryImages(admin, id, galleryUrls);
   await logAdminActivity({ admin: admin_, action: "product_updated", entityType: "product", entityId: id, metadata: { name: fields.name, price: fields.price } });
 
   revalidatePath("/admin/products");

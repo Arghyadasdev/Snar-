@@ -11,24 +11,40 @@ export async function listCategories() {
   return data || [];
 }
 
+// A self-referencing embed (categories!parent_id(...)) resolves to each
+// row's CHILDREN in PostgREST, not its parent — these two queries avoid
+// that ambiguity by looking the parent up separately.
 export async function listSubcategories(parentSlug) {
   const supabase = createPublicClient();
+  const { data: parentRows } = await supabase.from("categories").select("id").eq("slug", parentSlug).limit(1);
+  const parent = parentRows?.[0];
+  if (!parent) return [];
+
   const { data } = await supabase
     .from("categories")
-    .select("id, slug, name, parent:categories!parent_id(slug)")
-    .eq("parent.slug", parentSlug)
+    .select("id, slug, name")
+    .eq("parent_id", parent.id)
     .order("name");
-  return (data || []).filter((c) => c.parent?.slug === parentSlug);
+  return data || [];
 }
 
 export async function getCategoryBySlug(slug) {
   const supabase = createPublicClient();
   const { data } = await supabase
     .from("categories")
-    .select("id, slug, name, parent_id, parent:categories!parent_id(slug, name)")
+    .select("id, slug, name, parent_id")
     .eq("slug", slug)
     .limit(1);
-  return data?.[0] || null;
+  const category = data?.[0];
+  if (!category) return null;
+  if (!category.parent_id) return { ...category, parent: null };
+
+  const { data: parentRows } = await supabase
+    .from("categories")
+    .select("slug, name")
+    .eq("id", category.parent_id)
+    .limit(1);
+  return { ...category, parent: parentRows?.[0] || null };
 }
 
 export async function listProductsByCategory(categorySlug) {
@@ -85,11 +101,12 @@ export async function listAllProducts() {
 
 export async function getProductImages(productId) {
   const supabase = createPublicClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("product_images")
     .select("id, image_url, variant_id")
     .eq("product_id", productId)
     .order("sort_order", { ascending: true });
+  if (error) console.error("getProductImages failed:", error.message);
   return data || [];
 }
 
@@ -108,7 +125,7 @@ export async function getProductBySlug(slug) {
   const { data } = await supabase
     .from("products")
     .select(
-      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, specifications, category_id, category:categories(slug, name)"
+      "id, slug, name, description, price, compare_at_price, image_url, sizes, stock, sku, specifications, category_id, category:categories(slug, name)"
     )
     .eq("slug", slug)
     .eq("is_active", true)

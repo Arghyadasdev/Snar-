@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { addToCart } from "@/lib/data/cart";
 import { buildWhatsappOrderLink } from "@/lib/whatsapp";
+import { resolveSizeStock } from "@/lib/pricing";
 
-export default function ProductActions({ product, sizes, size, onSizeChange, price, whatsappNumber, variantId, colorName, stock }) {
+export default function ProductActions({ product, sizes, size, onSizeChange, price, whatsappNumber, variantId, colorName, stock, onShowSizeGuide }) {
   const [quantity, setQuantity] = useState(1);
   const unitPrice = price ?? product.price;
 
@@ -23,14 +24,38 @@ export default function ProductActions({ product, sizes, size, onSizeChange, pri
 
       {sizes.length > 0 && (
         <div className="size-picker">
-          <div className="size-picker-label">Size</div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div className="size-picker-label">Size</div>
+            {onShowSizeGuide && (
+              <button
+                type="button"
+                onClick={onShowSizeGuide}
+                style={{ background: "none", border: "none", padding: 0, color: "var(--ac)", fontSize: ".78rem", textDecoration: "underline", cursor: "pointer" }}
+              >
+                Size Guide
+              </button>
+            )}
+          </div>
           <div className="size-picker-options">
-            {sizes.map((s) => (
-              <label key={s.size} className="size-option">
-                <input type="radio" name="size" value={s.size} checked={size === s.size} onChange={() => onSizeChange(s.size)} />
-                <span>{s.size}{s.price != null ? ` — ₹${Number(s.price).toFixed(2)}` : ""}</span>
-              </label>
-            ))}
+            {sizes.map((s) => {
+              const sizeStock = resolveSizeStock(sizes, s.size);
+              const soldOut = sizeStock === 0;
+              return (
+                <label key={s.size} className={`size-option${soldOut ? " size-option-disabled" : ""}`}>
+                  <input
+                    type="radio"
+                    name="size"
+                    value={s.size}
+                    checked={size === s.size}
+                    disabled={soldOut}
+                    onChange={() => onSizeChange(s.size)}
+                  />
+                  <span style={soldOut ? { textDecoration: "line-through", opacity: 0.45 } : undefined}>
+                    {s.size}{s.price != null ? ` — ₹${Number(s.price).toFixed(2)}` : ""}
+                  </span>
+                </label>
+              );
+            })}
           </div>
         </div>
       )}
@@ -62,6 +87,10 @@ export default function ProductActions({ product, sizes, size, onSizeChange, pri
           ORDER VIA WHATSAPP
         </a>
       </div>
+
+      <p style={{ color: "var(--muted, #999)", fontSize: ".8rem", marginTop: "1rem" }}>
+        Shipping — you&apos;ll see delivery options and timing at checkout.
+      </p>
     </form>
   );
 }

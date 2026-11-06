@@ -35,9 +35,14 @@ export async function listAllCategoriesAdmin() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("categories")
-    .select("id, slug, name, parent_id, parent:categories!parent_id(name)")
+    .select("id, slug, name, parent_id")
     .order("name");
-  return data || [];
+  const categories = data || [];
+  // A self-referencing embed (categories!parent_id(name)) resolves to each
+  // row's CHILDREN in PostgREST, not its parent — looking up the parent by
+  // id ourselves avoids that ambiguity entirely.
+  const byId = Object.fromEntries(categories.map((c) => [c.id, c]));
+  return categories.map((c) => ({ ...c, parent: c.parent_id ? byId[c.parent_id] || null : null }));
 }
 
 export async function getCategoryAdmin(id) {

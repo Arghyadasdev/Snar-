@@ -573,6 +573,7 @@ footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 3.5
 .size-option input{position:absolute;opacity:0;pointer-events:none}
 .size-option span{display:flex;align-items:center;justify-content:center;min-width:44px;height:40px;padding:0 .8rem;border:1.5px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:border-color .2s,color .2s}
 .size-option input:checked + span{border-color:var(--ac);color:var(--ac)}
+.size-option-disabled span{cursor:not-allowed;color:var(--muted);border-color:var(--border)}
 
 /* ============ PRODUCT DETAIL v2 ============ */
 .pd2-breadcrumb{font-size:.78rem;color:var(--muted);margin-bottom:1.4rem}

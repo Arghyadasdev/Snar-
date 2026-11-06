@@ -112,6 +112,7 @@ export default function ProductDetailClient({
             )}
           </div>
           <div className="pd2-tax-note">Inclusive of all taxes</div>
+          {product.sku && <div className="pd2-tax-note">Style: {product.sku}</div>}
 
           {variants.length > 0 && (
             <div style={{ marginTop: "1rem" }}>
@@ -142,6 +143,10 @@ export default function ProductDetailClient({
             variantId={variantId}
             colorName={currentVariant?.color_name}
             stock={effectiveStock}
+            onShowSizeGuide={() => {
+              setTab("size guide");
+              document.getElementById("pd2-tabs-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
           />
         </div>
 
@@ -181,7 +186,7 @@ export default function ProductDetailClient({
           <img src={lifestyleImage} alt={product.name} />
         </div>
 
-        <div>
+        <div id="pd2-tabs-section">
           <div className="pd2-tabs">
             {["description", "features", "size guide", "reviews"].map((t) => (
               <button
