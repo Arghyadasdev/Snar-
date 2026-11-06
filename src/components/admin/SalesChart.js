@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+// Date.toLocaleDateString(undefined, ...) resolves the runtime's locale —
+// server (Node) and the browser can order day/month differently, which
+// breaks SSR hydration. Fixed format instead, same on both sides.
+function formatDay(dayStr) {
+  const d = new Date(dayStr);
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}`;
+}
+
 const WIDTH = 700;
 const HEIGHT = 220;
 const PAD_L = 46;
@@ -60,7 +70,7 @@ export default function SalesChart({ data, valueFormat = "currency" }) {
             <circle cx={p.x} cy={p.y} r={hover === i ? 5 : data.length > 20 ? 0 : 3.5} fill="#fff" stroke="var(--ac)" strokeWidth="2" pointerEvents="none" />
             {i % labelEvery === 0 && (
               <text x={p.x} y={HEIGHT - 8} textAnchor="middle" fontSize="10" fill="var(--a-muted)">
-                {new Date(p.day).toLocaleDateString(undefined, { day: "numeric", month: "short" })}
+                {formatDay(p.day)}
               </text>
             )}
           </g>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { deleteProductImage } from "@/lib/actions/admin-product-images";
 
 function discountPct(price, compareAt) {
@@ -10,6 +11,7 @@ function discountPct(price, compareAt) {
 }
 
 export default function ProductForm({ action, categories, product, images = [] }) {
+  const router = useRouter();
   const [state, formAction, pending] = useActionState(action, undefined);
 
   const roots = useMemo(() => categories.filter((c) => !c.parent_id), [categories]);
@@ -107,17 +109,20 @@ export default function ProductForm({ action, categories, product, images = [] }
             {images.map((img) => (
               <div key={img.id} style={{ position: "relative" }}>
                 <img src={img.image_url} alt="" style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "8px" }} />
-                <form action={deleteProductImage} style={{ position: "absolute", top: "-6px", right: "-6px" }}>
-                  <input type="hidden" name="id" value={img.id} />
-                  <input type="hidden" name="productId" value={product?.id} />
-                  <button
-                    type="submit"
-                    aria-label="Remove photo"
-                    style={{ width: "20px", height: "20px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".7rem", lineHeight: 1, cursor: "pointer" }}
-                  >
-                    ×
-                  </button>
-                </form>
+                <button
+                  type="button"
+                  aria-label="Remove photo"
+                  onClick={async () => {
+                    const fd = new FormData();
+                    fd.append("id", img.id);
+                    fd.append("productId", product?.id || "");
+                    await deleteProductImage(fd);
+                    router.refresh();
+                  }}
+                  style={{ position: "absolute", top: "-6px", right: "-6px", width: "20px", height: "20px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".7rem", lineHeight: 1, cursor: "pointer" }}
+                >
+                  ×
+                </button>
               </div>
             ))}
           </div>
