@@ -50,8 +50,16 @@ export default function ProductForm({ action, categories, product }) {
       <label className="auth-label" htmlFor="imageUrl">or Image URL / path (e.g. /cat_tshirt.png) — used if no photo uploaded above</label>
       <input className="auth-input" id="imageUrl" name="imageUrl" defaultValue={product?.image_url} placeholder="/cat_tshirt.png" />
 
-      <label className="auth-label" htmlFor="sizes">Sizes (comma separated)</label>
-      <input className="auth-input" id="sizes" name="sizes" defaultValue={(product?.sizes || []).join(", ")} placeholder="S, M, L, XL" />
+      <label className="auth-label" htmlFor="sizes">Sizes (comma separated — add :price to charge differently for that size, e.g. M:1100)</label>
+      <input
+        className="auth-input"
+        id="sizes"
+        name="sizes"
+        defaultValue={(product?.sizes || [])
+          .map((s) => (typeof s === "string" ? s : s.price != null ? `${s.size}:${s.price}` : s.size))
+          .join(", ")}
+        placeholder="S, M:1100, L:1200, XL"
+      />
 
       <label className="auth-label" htmlFor="stock">Stock</label>
       <input className="auth-input" id="stock" name="stock" type="number" defaultValue={product?.stock ?? 0} />

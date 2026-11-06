@@ -2,15 +2,19 @@ import Link from "next/link";
 import { getCart, updateCartItem, removeCartItem } from "@/lib/data/cart";
 import { getSiteSettings } from "@/lib/data/site-settings";
 import { buildWhatsappOrderLink } from "@/lib/whatsapp";
+import { resolveSizePrice } from "@/lib/pricing";
 
 export const metadata = { title: "Your Cart — SNAR" };
 
 export default async function CartPage() {
   const [items, settings] = await Promise.all([getCart(), getSiteSettings()]);
-  const total = items.reduce((sum, i) => sum + i.product.price * i.quantity, 0);
+  const prices = Object.fromEntries(
+    items.map((i) => [i.id, resolveSizePrice(i.product.sizes, i.size, i.product.price)])
+  );
+  const total = items.reduce((sum, i) => sum + prices[i.id] * i.quantity, 0);
   const whatsappUrl = buildWhatsappOrderLink(
     settings.whatsapp_number,
-    items.map((i) => ({ name: i.product.name, size: i.size, color: i.variant?.color_name, quantity: i.quantity, price: i.product.price })),
+    items.map((i) => ({ name: i.product.name, size: i.size, color: i.variant?.color_name, quantity: i.quantity, price: prices[i.id] })),
     total
   );
 
@@ -34,7 +38,7 @@ export default async function CartPage() {
                   <div className="cart-item-meta">
                     {item.variant?.color_name ? `${item.variant.color_name} · ` : ""}Size {item.size || "—"}
                   </div>
-                  <div className="cart-item-price">₹{Number(item.product.price).toFixed(2)}</div>
+                  <div className="cart-item-price">₹{prices[item.id].toFixed(2)}</div>
                 </div>
                 <form action={updateCartItem} className="cart-item-qty">
                   <input type="hidden" name="id" value={item.id} />

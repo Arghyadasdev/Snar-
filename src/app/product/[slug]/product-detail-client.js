@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { toggleWishlist } from "@/lib/actions/wishlist";
+import { resolveSizePrice } from "@/lib/pricing";
 import ProductGalleryView from "./product-gallery-view";
 import ProductActions from "./product-actions";
 
@@ -40,6 +41,7 @@ export default function ProductDetailClient({
   const [variantId, setVariantId] = useState(variants[0]?.id || null);
   const [wishlisted, setWishlisted] = useState(initialWishlisted);
   const [tab, setTab] = useState("description");
+  const [size, setSize] = useState(sizes[0]?.size || "");
   const currentVariant = variants.find((v) => v.id === variantId) || null;
 
   const images = currentVariant
@@ -48,9 +50,10 @@ export default function ProductDetailClient({
   const lifestyleImage = baseImages[0] || product.image_url;
 
   const effectiveStock = currentVariant ? currentVariant.stock : product.stock;
+  const effectivePrice = resolveSizePrice(sizes, size, product.price);
   const discountPct =
-    product.compare_at_price > product.price
-      ? Math.round((1 - product.price / product.compare_at_price) * 100)
+    product.compare_at_price > effectivePrice
+      ? Math.round((1 - effectivePrice / product.compare_at_price) * 100)
       : 0;
 
   return (
@@ -100,7 +103,7 @@ export default function ProductDetailClient({
           )}
 
           <div className="product-detail-price">
-            <span>₹{Number(product.price).toFixed(2)}</span>
+            <span>₹{effectivePrice.toFixed(2)}</span>
             {discountPct > 0 && (
               <>
                 <span className="product-card-strike">₹{Number(product.compare_at_price).toFixed(2)}</span>
@@ -132,6 +135,9 @@ export default function ProductDetailClient({
           <ProductActions
             product={product}
             sizes={sizes}
+            size={size}
+            onSizeChange={setSize}
+            price={effectivePrice}
             whatsappNumber={whatsappNumber}
             variantId={variantId}
             colorName={currentVariant?.color_name}

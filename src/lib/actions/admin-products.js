@@ -51,6 +51,23 @@ function slugify(name) {
     .replace(/(^-|-$)/g, "");
 }
 
+// "S, M:1100, L:1200, XL" — a size alone uses the product's base price;
+// "size:price" overrides the price for that size only.
+function parseSizes(raw) {
+  return (raw || "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const idx = entry.indexOf(":");
+      if (idx === -1) return { size: entry, price: null };
+      const size = entry.slice(0, idx).trim();
+      const price = Number(entry.slice(idx + 1).trim());
+      return { size, price: Number.isFinite(price) ? price : null };
+    })
+    .filter((s) => s.size);
+}
+
 function parseSpecifications(raw) {
   return (raw || "")
     .split("\n")
@@ -85,10 +102,7 @@ async function readProductForm(formData) {
     image_url: imageUrl,
     stock: Number(formData.get("stock")) || 0,
     is_active: formData.get("isActive") === "on",
-    sizes: sizesRaw
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean),
+    sizes: parseSizes(sizesRaw),
     specifications: parseSpecifications(specsRaw),
     sku: formData.get("sku")?.toString().trim() || null,
     hsn_code: formData.get("hsnCode")?.toString().trim() || null,

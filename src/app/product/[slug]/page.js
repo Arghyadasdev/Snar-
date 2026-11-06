@@ -9,6 +9,7 @@ import {
 } from "@/lib/data/products";
 import { getSiteSettings } from "@/lib/data/site-settings";
 import { getMyReview } from "@/lib/actions/reviews";
+import { normalizeSizes } from "@/lib/pricing";
 import { isProductWishlisted } from "@/lib/actions/wishlist";
 import { getCurrentUser } from "@/lib/auth/dal";
 import ProductCard from "@/components/ProductCard";
@@ -55,7 +56,7 @@ export default async function ProductPage({ params }) {
     (imagesByVariant[img.variant_id] ||= []).push(img.image_url);
   }
 
-  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+  const sizes = normalizeSizes(product.sizes);
   const specs = Array.isArray(product.specifications) ? product.specifications : [];
 
   return (

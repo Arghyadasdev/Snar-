@@ -4,14 +4,14 @@ import { useState } from "react";
 import { addToCart } from "@/lib/data/cart";
 import { buildWhatsappOrderLink } from "@/lib/whatsapp";
 
-export default function ProductActions({ product, sizes, whatsappNumber, variantId, colorName, stock }) {
-  const [size, setSize] = useState(sizes[0] || "");
+export default function ProductActions({ product, sizes, size, onSizeChange, price, whatsappNumber, variantId, colorName, stock }) {
   const [quantity, setQuantity] = useState(1);
+  const unitPrice = price ?? product.price;
 
   const whatsappUrl = buildWhatsappOrderLink(
     whatsappNumber,
-    [{ name: product.name, size, color: colorName, quantity, price: product.price }],
-    product.price * quantity
+    [{ name: product.name, size, color: colorName, quantity, price: unitPrice }],
+    unitPrice * quantity
   );
 
   return (
@@ -26,9 +26,9 @@ export default function ProductActions({ product, sizes, whatsappNumber, variant
           <div className="size-picker-label">Size</div>
           <div className="size-picker-options">
             {sizes.map((s) => (
-              <label key={s} className="size-option">
-                <input type="radio" name="size" value={s} checked={size === s} onChange={() => setSize(s)} />
-                <span>{s}</span>
+              <label key={s.size} className="size-option">
+                <input type="radio" name="size" value={s.size} checked={size === s.size} onChange={() => onSizeChange(s.size)} />
+                <span>{s.size}{s.price != null ? ` — ₹${Number(s.price).toFixed(2)}` : ""}</span>
               </label>
             ))}
           </div>

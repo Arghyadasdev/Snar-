@@ -19,13 +19,11 @@ export async function listProductImagesAdmin(productId) {
 export async function addProductImage(prevState, formData) {
   await requireAdmin();
   const productId = formData.get("productId")?.toString();
-  const file = formData.get("imageFile");
+  const files = formData.getAll("imageFile").filter((f) => f instanceof File && f.size > 0);
 
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: "Choose a photo to upload." };
+  if (files.length === 0) {
+    return { error: "Choose at least one photo to upload." };
   }
-
-  const imageUrl = await uploadProductImage(file);
 
   const admin = createAdminClient();
   const { data: existing } = await admin
@@ -36,16 +34,21 @@ export async function addProductImage(prevState, formData) {
     .limit(1)
     .maybeSingle();
 
-  const { error } = await admin.from("product_images").insert({
-    product_id: productId,
-    image_url: imageUrl,
-    sort_order: (existing?.sort_order ?? -1) + 1,
-  });
+  let nextSortOrder = (existing?.sort_order ?? -1) + 1;
+  const imageUrls = await Promise.all(files.map((file) => uploadProductImage(file)));
+
+  const { error } = await admin.from("product_images").insert(
+    imageUrls.map((imageUrl) => ({
+      product_id: productId,
+      image_url: imageUrl,
+      sort_order: nextSortOrder++,
+    }))
+  );
 
   if (error) return { error: error.message };
 
   revalidatePath(`/admin/products/${productId}/edit`);
-  return { success: "Photo added." };
+  return { success: `${files.length} photo${files.length === 1 ? "" : "s"} added.` };
 }
 
 export async function deleteProductImage(formData) {

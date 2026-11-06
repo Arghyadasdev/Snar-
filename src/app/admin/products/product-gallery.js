@@ -36,11 +36,11 @@ export default function ProductGallery({ productId, images }) {
 
       <form action={formAction}>
         <input type="hidden" name="productId" value={productId} />
-        <input className="auth-input" name="imageFile" type="file" accept="image/*" required />
+        <input className="auth-input" name="imageFile" type="file" accept="image/*" multiple required />
         {state?.error && <p className="auth-error">{state.error}</p>}
         {state?.success && <p className="auth-success">{state.success}</p>}
         <button className="btn-outline" type="submit" disabled={pending} style={{ marginTop: ".8rem" }}>
-          {pending ? "Uploading…" : "Add Photo"}
+          {pending ? "Uploading…" : "Add Photos"}
         </button>
       </form>
     </div>
