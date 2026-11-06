@@ -50,6 +50,13 @@ export default function ProductForm({ action, categories, product }) {
       <label className="auth-label" htmlFor="imageUrl">or Image URL / path (e.g. /cat_tshirt.png) — used if no photo uploaded above</label>
       <input className="auth-input" id="imageUrl" name="imageUrl" defaultValue={product?.image_url} placeholder="/cat_tshirt.png" />
 
+      {!product && (
+        <>
+          <label className="auth-label" htmlFor="galleryFiles">More Photos (optional — shown in the product gallery, pick as many as you want)</label>
+          <input className="auth-input" id="galleryFiles" name="galleryFiles" type="file" accept="image/*" multiple />
+        </>
+      )}
+
       <label className="auth-label" htmlFor="sizes">Sizes (comma separated — add :price to charge differently for that size, e.g. M:1100)</label>
       <input
         className="auth-input"

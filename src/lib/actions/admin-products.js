@@ -128,6 +128,14 @@ export async function createProduct(prevState, formData) {
     return { error: error.message };
   }
 
+  const galleryFiles = formData.getAll("galleryFiles").filter((f) => f instanceof File && f.size > 0);
+  if (galleryFiles.length > 0) {
+    const imageUrls = await Promise.all(galleryFiles.map((file) => uploadProductImage(file)));
+    await admin.from("product_images").insert(
+      imageUrls.map((image_url, i) => ({ product_id: data.id, image_url, sort_order: i }))
+    );
+  }
+
   await logAdminActivity({ admin: admin_, action: "product_created", entityType: "product", entityId: data.id, metadata: { name: fields.name, price: fields.price } });
 
   revalidatePath("/admin/products");
