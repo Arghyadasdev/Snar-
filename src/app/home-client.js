@@ -374,7 +374,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
         <FlowSection
           aria-label="Who we are"
           style={{
-            backgroundImage: 'linear-gradient(to bottom right, rgba(0,0,0,0.72) 0%, rgba(25,25,25,0.45) 100%), url("/Climber.png")',
+            backgroundImage: 'linear-gradient(to bottom right, rgba(0,0,0,0.72) 0%, rgba(0,196,212,0.45) 100%), url("/Climber.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             color: '#fff',

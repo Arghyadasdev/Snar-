@@ -86,11 +86,11 @@ export default function AboutPage() {
       }}>
         <div aria-hidden="true" style={{
           position: "absolute", inset: 0, pointerEvents: "none",
-          background: "radial-gradient(ellipse 70% 60% at 75% 50%, rgba(25,25,25,0.07) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse 70% 60% at 75% 50%, rgba(0,196,212,0.07) 0%, transparent 70%)",
         }} />
         <div aria-hidden="true" style={{
           position: "absolute", inset: 0, pointerEvents: "none",
-          backgroundImage: "linear-gradient(rgba(25,25,25,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(25,25,25,0.03) 1px, transparent 1px)",
+          backgroundImage: "linear-gradient(rgba(0,196,212,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,196,212,0.03) 1px, transparent 1px)",
           backgroundSize: "80px 80px",
           maskImage: "radial-gradient(ellipse 80% 80% at 70% 50%, black 30%, transparent 80%)",
         }} />
@@ -122,14 +122,14 @@ export default function AboutPage() {
             }}>
               Designed by<br />
               an Athlete.<br />
-              <span style={{ color: "var(--ac)", textShadow: "0 0 60px rgba(25,25,25,0.4)" }}>
+              <span style={{ color: "var(--ac)", textShadow: "0 0 60px rgba(0,196,212,0.4)" }}>
                 Built for Every.
               </span>
             </h1>
 
             <div style={{
               display: "flex", flexDirection: "column", gap: "1.25rem",
-              borderLeft: "2px solid rgba(25,25,25,0.2)", paddingLeft: "1.5rem",
+              borderLeft: "2px solid rgba(0,196,212,0.2)", paddingLeft: "1.5rem",
             }}>
               <p style={{ fontSize: "clamp(.9rem, 1.3vw, 1.05rem)", lineHeight: 1.75, color: "rgba(255,255,255,0.6)", fontWeight: 300, maxWidth: "50ch" }}>
                 At SNAR, performance isn't just a feature — it's our foundation. Born from real athletic experience, SNAR was created to redefine what sportswear should be. Our founder, an athlete himself, understood the frustrations of apparel that restricted movement, lacked comfort, or failed to perform when it mattered most.
@@ -147,7 +147,7 @@ export default function AboutPage() {
             <div aria-hidden="true" style={{
               position: "absolute", width: "85%", height: "85%",
               borderRadius: "50%",
-              background: "radial-gradient(circle, rgba(25,25,25,0.08) 0%, transparent 70%)",
+              background: "radial-gradient(circle, rgba(0,196,212,0.08) 0%, transparent 70%)",
               pointerEvents: "none",
             }} />
             <GlobePulse style={{ width: "100%" }} />
@@ -178,14 +178,14 @@ export default function AboutPage() {
           }}>
             <div aria-hidden="true" style={{
               position: "absolute", inset: 0,
-              background: "radial-gradient(ellipse at center, rgba(25,25,25,0.04) 0%, transparent 70%)",
+              background: "radial-gradient(ellipse at center, rgba(0,196,212,0.04) 0%, transparent 70%)",
               pointerEvents: "none",
             }} />
             <div style={{
               fontFamily: "'Bebas Neue', sans-serif",
               fontSize: "clamp(2.2rem, 4vw, 3.5rem)",
               color: "var(--ac)", lineHeight: 1, marginBottom: ".5rem",
-              textShadow: "0 0 30px rgba(25,25,25,0.35)",
+              textShadow: "0 0 30px rgba(0,196,212,0.35)",
             }}>{s.num}</div>
             <div style={{
               fontSize: ".68rem", fontWeight: 600, letterSpacing: ".16em",
@@ -206,7 +206,7 @@ export default function AboutPage() {
           <div aria-hidden="true" style={{
             position: "absolute", top: "-60px", left: "-60px",
             width: "320px", height: "320px", borderRadius: "50%",
-            border: "1px solid rgba(25,25,25,0.05)", pointerEvents: "none",
+            border: "1px solid rgba(0,196,212,0.05)", pointerEvents: "none",
           }} />
 
           <div>
@@ -225,8 +225,8 @@ export default function AboutPage() {
 
           <div style={{
             padding: "3rem",
-            background: "linear-gradient(135deg, rgba(25,25,25,0.06) 0%, rgba(25,25,25,0.02) 100%)",
-            border: "1px solid rgba(25,25,25,0.12)",
+            background: "linear-gradient(135deg, rgba(0,196,212,0.06) 0%, rgba(0,196,212,0.02) 100%)",
+            border: "1px solid rgba(0,196,212,0.12)",
             borderRadius: "20px",
             position: "relative",
           }}>
@@ -287,7 +287,7 @@ export default function AboutPage() {
               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
                 <div style={{
                   width: "44px", height: "44px", borderRadius: "12px",
-                  background: "rgba(25,25,25,0.07)", border: "1px solid rgba(25,25,25,0.18)",
+                  background: "rgba(0,196,212,0.07)", border: "1px solid rgba(0,196,212,0.18)",
                   display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                 }}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -307,15 +307,15 @@ export default function AboutPage() {
       <section style={{ padding: "0 6vw 8rem" }}>
         <div style={{
           padding: "5rem",
-          background: "linear-gradient(135deg, rgba(25,25,25,0.05) 0%, rgba(25,25,25,0.02) 50%, transparent 100%)",
-          border: "1px solid rgba(25,25,25,0.12)",
+          background: "linear-gradient(135deg, rgba(0,196,212,0.05) 0%, rgba(0,196,212,0.02) 50%, transparent 100%)",
+          border: "1px solid rgba(0,196,212,0.12)",
           borderRadius: "24px", position: "relative", overflow: "hidden",
         }}>
           <div aria-hidden="true" style={{
             position: "absolute", top: "-1rem", right: "4vw",
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "clamp(8rem, 18vw, 20rem)",
-            color: "rgba(25,25,25,0.025)", lineHeight: 1, letterSpacing: ".02em",
+            color: "rgba(0,196,212,0.025)", lineHeight: 1, letterSpacing: ".02em",
             userSelect: "none", pointerEvents: "none",
           }}>EDGE</div>
 
@@ -342,8 +342,8 @@ export default function AboutPage() {
                   <div style={{
                     width: "28px", height: "28px", flexShrink: 0,
                     borderRadius: "50%",
-                    background: "rgba(25,25,25,0.1)",
-                    border: "1px solid rgba(25,25,25,0.25)",
+                    background: "rgba(0,196,212,0.1)",
+                    border: "1px solid rgba(0,196,212,0.25)",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--ac)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -369,7 +369,7 @@ export default function AboutPage() {
           <div aria-hidden="true" style={{
             position: "absolute", bottom: "-80px", right: "-80px",
             width: "350px", height: "350px", borderRadius: "50%",
-            border: "1px solid rgba(25,25,25,0.06)", pointerEvents: "none",
+            border: "1px solid rgba(0,196,212,0.06)", pointerEvents: "none",
           }} />
 
           <div>
@@ -388,13 +388,13 @@ export default function AboutPage() {
               <div key={i} style={{
                 display: "flex", gap: "1.25rem", alignItems: "flex-start",
                 padding: "1.5rem",
-                background: "rgba(25,25,25,0.03)",
-                border: "1px solid rgba(25,25,25,0.08)",
+                background: "rgba(0,196,212,0.03)",
+                border: "1px solid rgba(0,196,212,0.08)",
                 borderRadius: "14px",
               }}>
                 <div style={{
                   width: "32px", height: "32px", borderRadius: "8px",
-                  background: "rgba(25,25,25,0.1)", border: "1px solid rgba(25,25,25,0.2)",
+                  background: "rgba(0,196,212,0.1)", border: "1px solid rgba(0,196,212,0.2)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   flexShrink: 0, marginTop: ".1rem",
                   fontFamily: "'Bebas Neue', sans-serif", fontSize: "1rem", color: "var(--ac)",
@@ -415,15 +415,15 @@ export default function AboutPage() {
       <section style={{ padding: "0 6vw 8rem" }}>
         <div style={{
           padding: "6rem 5vw",
-          background: "linear-gradient(135deg, rgba(25,25,25,0.05) 0%, rgba(25,25,25,0.02) 50%, transparent 100%)",
-          border: "1px solid rgba(25,25,25,0.12)",
+          background: "linear-gradient(135deg, rgba(0,196,212,0.05) 0%, rgba(0,196,212,0.02) 50%, transparent 100%)",
+          border: "1px solid rgba(0,196,212,0.12)",
           borderRadius: "24px", position: "relative", overflow: "hidden",
         }}>
           <div aria-hidden="true" style={{
             position: "absolute", top: "-1rem", right: "4vw",
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "clamp(8rem, 18vw, 20rem)",
-            color: "rgba(25,25,25,0.03)", lineHeight: 1, letterSpacing: ".02em",
+            color: "rgba(0,196,212,0.03)", lineHeight: 1, letterSpacing: ".02em",
             userSelect: "none", pointerEvents: "none",
           }}>SNAR</div>
 
@@ -455,8 +455,8 @@ export default function AboutPage() {
                 {["Movement", "Discipline", "Confidence", "Performance", "Self-Improvement"].map((tag) => (
                   <span key={tag} style={{
                     padding: ".35rem .9rem",
-                    background: "rgba(25,25,25,0.07)",
-                    border: "1px solid rgba(25,25,25,0.15)",
+                    background: "rgba(0,196,212,0.07)",
+                    border: "1px solid rgba(0,196,212,0.15)",
                     borderRadius: "100px",
                     fontSize: ".68rem", fontWeight: 600, letterSpacing: ".1em",
                     textTransform: "uppercase", color: "var(--ac)",
@@ -480,7 +480,7 @@ export default function AboutPage() {
         }}>
           <div aria-hidden="true" style={{
             position: "absolute", inset: 0,
-            background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(25,25,25,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,196,212,0.06) 0%, transparent 70%)",
             pointerEvents: "none",
           }} />
 
@@ -517,8 +517,8 @@ export default function AboutPage() {
             <div style={{
               display: "inline-flex", alignItems: "center", gap: "1rem",
               padding: "1rem 2rem",
-              background: "rgba(25,25,25,0.06)",
-              border: "1px solid rgba(25,25,25,0.15)",
+              background: "rgba(0,196,212,0.06)",
+              border: "1px solid rgba(0,196,212,0.15)",
               borderRadius: "100px",
             }}>
               <span style={{ fontSize: ".72rem", fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "var(--ac)" }}>

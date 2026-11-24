@@ -111,7 +111,7 @@ export default function CheckoutForm() {
       name: "SNAR",
       description: "Order payment",
       prefill: { name: shipping.name, contact: shipping.phone },
-      theme: { color: "#191919" },
+      theme: { color: "#00C4D4" },
       handler: async (response) => {
         const result = await verifyAndPlaceOrder({
           shipping,

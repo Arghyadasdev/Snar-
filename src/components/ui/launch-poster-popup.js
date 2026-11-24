@@ -45,7 +45,7 @@ export default function LaunchPosterPopup() {
           maxHeight: "88svh",
           borderRadius: "16px",
           overflow: "hidden",
-          boxShadow: "0 30px 80px -20px rgba(25,25,25,0.35), 0 0 0 1px rgba(255,255,255,0.08)",
+          boxShadow: "0 30px 80px -20px rgba(0,196,212,0.35), 0 0 0 1px rgba(255,255,255,0.08)",
           animation: `${closing ? "lp-pop-out .25s ease forwards" : "lp-pop-in .55s cubic-bezier(.17,.89,.32,1.49) forwards"}`,
         }}
       >

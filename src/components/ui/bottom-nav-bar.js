@@ -40,7 +40,7 @@ export function BottomNavBar({ defaultIndex = 0 }) {
         background:     "rgba(9,9,15,0.96)",
         border:         "1px solid rgba(255,255,255,0.1)",
         backdropFilter: "blur(24px)",
-        boxShadow:      "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(25,25,25,0.06)",
+        boxShadow:      "0 8px 40px rgba(0,0,0,0.65), 0 0 0 1px rgba(0,196,212,0.06)",
         height:         "56px",
         minWidth:       "300px",
         maxWidth:       "95vw",

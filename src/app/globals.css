@@ -1,17 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-/* PUMA-style design tokens — monochrome ink/canvas, product/photography
-   carries all the color. Component shapes (pill nav, blurred glass,
-   rounded image wells) are a separate follow-up; this layer only repoints
-   the CSS variables every component already reads. */
 :root{
-  --ac:#191919;--ac2:#000000;--ac-dim:#2B2B2B;
-  --ac-glow:rgba(0,0,0,0.08);--ac-glow2:rgba(0,0,0,0.04);
-  --bg:#FFFFFF;--bg2:#F6F7F8;--bg3:#EDEEF1;
-  --surface:#F6F7F8;--surface2:#F0F1F4;
-  --border:#DFE0E1;--border2:#191919;
-  --white:#191919;--off:#676D75;--muted:#676D75;--muted2:#9199A1;
+  --ac:#00C4D4;--ac2:#009BAB;--ac-dim:#00A8B8;
+  --ac-glow:rgba(0,196,212,0.18);--ac-glow2:rgba(0,196,212,0.08);
+  --bg:#09090F;--bg2:#0D0E15;--bg3:#111219;
+  --surface:#15161E;--surface2:#1A1B25;
+  --border:rgba(255,255,255,0.07);--border2:rgba(0,196,212,0.25);
+  --white:#FFFFFF;--off:#C8CACE;--muted:#6B7280;--muted2:#3E4451;
   --sale:#BA2B20;--success:#1B7F3A;
   --font-display:'Barlow Condensed','Roboto Condensed',Arial Narrow,sans-serif;
   --font-body:'Barlow','Roboto',Helvetica,Arial,sans-serif;
@@ -22,7 +18,7 @@
 .pd-light{
   --bg:#FFFFFF;--bg2:#F3F4F6;--bg3:#EDEEF1;
   --surface:#F8F9FB;--surface2:#F0F1F4;
-  --border:#E5E7EB;--border2:rgba(25,25,25,0.35);
+  --border:#E5E7EB;--border2:rgba(0,196,212,0.35);
   --white:#12141A;--off:#4B5563;--muted:#6B7280;--muted2:#9CA3AF;
   background:var(--bg);color:var(--white);
 }
