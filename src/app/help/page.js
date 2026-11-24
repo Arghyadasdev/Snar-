@@ -35,7 +35,7 @@ export default async function HelpPage() {
       >
         <p
           style={{
-            color: "#191919",
+            color: "#fff",
             fontFamily: "Inter, sans-serif",
             fontSize: "0.8rem",
             fontWeight: "700",
@@ -98,7 +98,7 @@ export default async function HelpPage() {
           style={{
             width: "48px",
             height: "3px",
-            background: "#191919",
+            background: "#fff",
             marginBottom: "40px",
           }}
         />
@@ -132,7 +132,7 @@ export default async function HelpPage() {
           style={{
             width: "48px",
             height: "3px",
-            background: "#191919",
+            background: "#fff",
             margin: "0 auto 32px",
           }}
         />
@@ -152,13 +152,13 @@ export default async function HelpPage() {
             href="mailto:info@snar.co.in"
             style={{
               display: "inline-block",
-              color: "#191919",
+              color: "#fff",
               fontFamily: "Inter, sans-serif",
               fontSize: "1.1rem",
               fontWeight: "700",
               textDecoration: "none",
               letterSpacing: "0.04em",
-              borderBottom: "2px solid #191919",
+              borderBottom: "2px solid #fff",
               paddingBottom: "2px",
             }}
           >
@@ -168,13 +168,13 @@ export default async function HelpPage() {
             href="mailto:info@snar.co.in"
             style={{
               display: "inline-block",
-              color: "#191919",
+              color: "#fff",
               fontFamily: "Inter, sans-serif",
               fontSize: "1.1rem",
               fontWeight: "700",
               textDecoration: "none",
               letterSpacing: "0.04em",
-              borderBottom: "2px solid #191919",
+              borderBottom: "2px solid #fff",
               paddingBottom: "2px",
             }}
           >
@@ -184,13 +184,13 @@ export default async function HelpPage() {
             href="mailto:marketing@snar.co.in"
             style={{
               display: "inline-block",
-              color: "#191919",
+              color: "#fff",
               fontFamily: "Inter, sans-serif",
               fontSize: "1.1rem",
               fontWeight: "700",
               textDecoration: "none",
               letterSpacing: "0.04em",
-              borderBottom: "2px solid #191919",
+              borderBottom: "2px solid #fff",
               paddingBottom: "2px",
             }}
           >
@@ -200,13 +200,13 @@ export default async function HelpPage() {
             href="mailto:finance@snar.co.in"
             style={{
               display: "inline-block",
-              color: "#191919",
+              color: "#fff",
               fontFamily: "Inter, sans-serif",
               fontSize: "1.1rem",
               fontWeight: "700",
               textDecoration: "none",
               letterSpacing: "0.04em",
-              borderBottom: "2px solid #191919",
+              borderBottom: "2px solid #fff",
               paddingBottom: "2px",
             }}
           >
@@ -228,7 +228,7 @@ export default async function HelpPage() {
             display: "inline-block",
             marginTop: "40px",
             padding: "12px 32px",
-            background: "#191919",
+            background: "#fff",
             color: "#09090F",
             fontFamily: "Inter, sans-serif",
             fontWeight: "700",

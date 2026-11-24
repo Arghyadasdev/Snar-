@@ -533,27 +533,27 @@ export default function AboutPage() {
       <section style={{
         margin: "0 6vw 8rem", padding: "6rem 5vw",
         background: "linear-gradient(135deg, #0A1520 0%, #060C12 100%)",
-        border: "1px solid rgba(25,25,25,0.14)", borderRadius: "24px",
+        border: "1px solid rgba(255,255,255,0.14)", borderRadius: "24px",
         textAlign: "center", position: "relative", overflow: "hidden",
       }}>
         <div aria-hidden="true" style={{
           position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(25,25,25,0.1) 0%, transparent 60%)",
+          background: "radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,255,255,0.1) 0%, transparent 60%)",
           pointerEvents: "none",
         }} />
 
         <div style={{ position: "relative" }}>
           <div style={{ display: "inline-flex", alignItems: "center", gap: ".5rem", marginBottom: "1.5rem" }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--ac)", boxShadow: "0 0 8px var(--ac)" }} />
-            <p style={{ fontSize: ".72rem", fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "var(--ac)", margin: 0 }}>Join The Movement</p>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--ac)", boxShadow: "0 0 8px var(--ac)" }} />
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#fff", boxShadow: "0 0 8px rgba(255,255,255,0.6)" }} />
+            <p style={{ fontSize: ".72rem", fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "#fff", margin: 0 }}>Join The Movement</p>
+            <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#fff", boxShadow: "0 0 8px rgba(255,255,255,0.6)" }} />
           </div>
 
           <h2 style={{
             fontFamily: "'Bebas Neue', sans-serif",
             fontSize: "clamp(3rem, 8vw, 7rem)",
             lineHeight: 0.88, letterSpacing: ".02em", marginBottom: "1.5rem",
-            textShadow: "0 0 80px rgba(25,25,25,0.2)",
+            textShadow: "0 0 80px rgba(255,255,255,0.2)",
           }}>
             Ignite Your Edge
           </h2>
@@ -567,10 +567,10 @@ export default function AboutPage() {
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="/collections" style={{
               display: "inline-flex", alignItems: "center", gap: ".6rem",
-              padding: ".95rem 2.5rem", background: "var(--ac)", color: "#05050A",
+              padding: ".95rem 2.5rem", background: "#fff", color: "#05050A",
               borderRadius: "12px", fontSize: ".78rem", fontWeight: 800, letterSpacing: ".1em",
               textTransform: "uppercase", textDecoration: "none",
-              boxShadow: "0 0 30px rgba(25,25,25,0.25)",
+              boxShadow: "0 0 30px rgba(255,255,255,0.25)",
             }}>
               Shop Now
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

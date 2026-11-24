@@ -37,8 +37,8 @@ function SpotlightLink({ href, children }) {
         aria-hidden="true"
         style={{
           position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none",
-          background: `radial-gradient(${spotSize}px ${spotSize}px at ${pos.x}px ${pos.y}px, rgba(25,25,25,${glowOpacity}), transparent)`,
-          boxShadow: clicked ? "inset 0 0 14px rgba(25,25,25,0.18)" : "none",
+          background: `radial-gradient(${spotSize}px ${spotSize}px at ${pos.x}px ${pos.y}px, rgba(255,255,255,${glowOpacity}), transparent)`,
+          boxShadow: clicked ? "inset 0 0 14px rgba(255,255,255,0.18)" : "none",
           transition: clicked ? "box-shadow 0.3s" : "background 0.15s, box-shadow 0.3s",
         }}
       />

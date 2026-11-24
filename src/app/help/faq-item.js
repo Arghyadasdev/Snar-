@@ -11,13 +11,13 @@ export default function FAQItem({ question, answer }) {
         style={{
           width: "100%", background: "none", border: "none", cursor: "pointer",
           display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "20px 0", textAlign: "left", color: open ? "#191919" : "#e0e0e0",
+          padding: "20px 0", textAlign: "left", color: open ? "#fff" : "#e0e0e0",
           fontFamily: "Inter, sans-serif", fontSize: "1rem", fontWeight: "600", transition: "color 0.2s",
         }}
       >
         <span>{question}</span>
         <span style={{
-          fontSize: "1.4rem", lineHeight: 1, color: "#191919",
+          fontSize: "1.4rem", lineHeight: 1, color: "#fff",
           transform: open ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.25s", display: "inline-block",
         }}>+</span>
       </button>
