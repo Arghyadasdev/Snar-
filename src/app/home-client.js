@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProductGrid from "@/components/ProductGrid";
 import LaunchPosterPopup from "@/components/ui/launch-poster-popup";
+import { ClothingRailHero } from "@/components/ui/product-rail-gallery";
 
 const CinematicFooter = dynamic(
   () => import("@/components/ui/motion-footer").then(m => ({ default: m.CinematicFooter })),
@@ -307,15 +308,36 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
         </div>
       </section>
 
+      {/* HANGER RAIL — interactive gallery of featured products */}
+      {featuredProducts.length > 0 && (
+        <ClothingRailHero
+          items={featuredProducts.slice(0, 10).map((p) => ({
+            id: p.id,
+            name: p.name,
+            description: p.description || undefined,
+            image: p.image_url,
+            tag: `₹${Number(p.price).toFixed(0)}`,
+          }))}
+          eyebrow="Pick one up"
+          heading="Browse the rail"
+          caption="Brush along the rail, or tap a piece to see it up close."
+          action={
+            <Link href="/collections" className="btn-outline" style={{ borderColor: "var(--ac)", color: "var(--ac)" }}>
+              Shop the collection
+            </Link>
+          }
+        />
+      )}
+
       {/* PROMO BANNERS */}
       <div className="promo-section">
         <div className="promo-card">
           <div className="promo-bg">
             <div className="promo-bg-placeholder" style={{background:"linear-gradient(135deg,#0A0B12 0%,#12141E 40%,#0D1828 100%)"}}>
               <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:.12}} viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
-                <path d="M350 30 L280 110 L310 122 L310 300 L490 300 L490 122 L520 110 L450 30 Q415 46 400 48 Q385 46 350 30Z" fill="none" stroke="#00C4D4" strokeWidth="1.5"/>
-                <circle cx="180" cy="170" r="90" fill="none" stroke="#00C4D4" strokeWidth="1"/>
-                <path d="M130 80 L130 250 L230 250 L230 80Z" fill="rgba(0,196,212,0.05)"/>
+                <path d="M350 30 L280 110 L310 122 L310 300 L490 300 L490 122 L520 110 L450 30 Q415 46 400 48 Q385 46 350 30Z" fill="none" stroke="#191919" strokeWidth="1.5"/>
+                <circle cx="180" cy="170" r="90" fill="none" stroke="#191919" strokeWidth="1"/>
+                <path d="M130 80 L130 250 L230 250 L230 80Z" fill="rgba(25,25,25,0.05)"/>
               </svg>
             </div>
             <div className="promo-overlay"/>
@@ -331,9 +353,9 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
           <div className="promo-bg">
             <div className="promo-bg-placeholder" style={{background:"linear-gradient(135deg,#0A1018 0%,#141820 40%,#0A1215 100%)"}}>
               <svg style={{position:"absolute",inset:0,width:"100%",height:"100%",opacity:.12}} viewBox="0 0 600 340" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="480" cy="170" rx="110" ry="130" fill="none" stroke="#00C4D4" strokeWidth="1.5"/>
-                <path d="M100 30 L80 120 L95 126 L90 290 L310 290 L305 126 L320 120 L300 30Z" fill="none" stroke="#00C4D4" strokeWidth="1.2"/>
-                <line x1="0" y1="100" x2="600" y2="240" stroke="#00C4D4" strokeWidth=".8" strokeDasharray="4 8"/>
+                <ellipse cx="480" cy="170" rx="110" ry="130" fill="none" stroke="#191919" strokeWidth="1.5"/>
+                <path d="M100 30 L80 120 L95 126 L90 290 L310 290 L305 126 L320 120 L300 30Z" fill="none" stroke="#191919" strokeWidth="1.2"/>
+                <line x1="0" y1="100" x2="600" y2="240" stroke="#191919" strokeWidth=".8" strokeDasharray="4 8"/>
               </svg>
             </div>
             <div className="promo-overlay"/>
@@ -352,13 +374,13 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
         <FlowSection
           aria-label="Who we are"
           style={{
-            backgroundImage: 'linear-gradient(to bottom right, rgba(0,0,0,0.72) 0%, rgba(0,196,212,0.45) 100%), url("/Climber.png")',
+            backgroundImage: 'linear-gradient(to bottom right, rgba(0,0,0,0.72) 0%, rgba(25,25,25,0.45) 100%), url("/Climber.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center top',
             color: '#fff',
           }}
         >
-          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#00C4D4' }}>01 — Who we are</p>
+          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#191919' }}>01 — Who we are</p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,.2)', margin: '2vw 0' }} />
           <div>
             <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3.5rem,12vw,13rem)', fontWeight: 700, lineHeight: .85, letterSpacing: '.02em', textTransform: 'uppercase' }}>
@@ -380,7 +402,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
             color: '#FFFFFF',
           }}
         >
-          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#00C4D4' }}>02 — The mission</p>
+          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#191919' }}>02 — The mission</p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,.12)', margin: '2vw 0' }} />
           <div>
             <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3.5rem,12vw,13rem)', fontWeight: 700, lineHeight: .85, letterSpacing: '.02em', textTransform: 'uppercase' }}>
@@ -399,7 +421,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
               { title: 'Flex Fit Design', desc: 'Four-way stretch that moves with your body — never against it.' },
             ].map(item => (
               <div key={item.title} style={{ minWidth: '180px', flex: 1 }}>
-                <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#00C4D4', marginBottom: '.5rem' }}>{item.title}</p>
+                <p style={{ fontSize: '.75rem', fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', color: '#191919', marginBottom: '.5rem' }}>{item.title}</p>
                 <p style={{ fontSize: 'clamp(.85rem,1.3vw,1rem)', lineHeight: 1.65, color: 'rgba(200,202,206,0.75)' }}>{item.desc}</p>
               </div>
             ))}
@@ -419,7 +441,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
             color: '#FFFFFF',
           }}
         >
-          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#00C4D4' }}>03 — Join the movement</p>
+          <p style={{ fontSize: '.7rem', fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: '#191919' }}>03 — Join the movement</p>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,.1)', margin: '2vw 0' }} />
           <div>
             <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 'clamp(3.5rem,12vw,13rem)', fontWeight: 700, lineHeight: .85, letterSpacing: '.02em', textTransform: 'uppercase' }}>
@@ -438,7 +460,7 @@ export default function Home({ banners, marqueeItems, stats, testimonials, featu
               { num: '4.9★', label: 'Average customer rating' },
             ].map(item => (
               <div key={item.num} style={{ minWidth: '180px', flex: 1 }}>
-                <p style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 'clamp(2rem,4vw,3.5rem)', letterSpacing: '.04em', color: '#00C4D4', lineHeight: 1, marginBottom: '.4rem' }}>{item.num}</p>
+                <p style={{ fontFamily: "'Bebas Neue',sans-serif", fontSize: 'clamp(2rem,4vw,3.5rem)', letterSpacing: '.04em', color: '#191919', lineHeight: 1, marginBottom: '.4rem' }}>{item.num}</p>
                 <p style={{ fontSize: 'clamp(.85rem,1.3vw,1rem)', lineHeight: 1.65, color: 'rgba(200,202,206,0.75)', textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 500, fontSize: '.75rem' }}>{item.label}</p>
               </div>
             ))}

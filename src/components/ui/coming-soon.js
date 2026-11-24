@@ -56,7 +56,7 @@ export default function ComingSoon({ category, tagline, accentWord, description 
         right: "-10%",
         width: "clamp(300px, 50vw, 600px)",
         height: "clamp(300px, 50vw, 600px)",
-        background: "radial-gradient(circle, rgba(0,196,212,0.12) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(25,25,25,0.12) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
       <div aria-hidden="true" style={{
@@ -65,7 +65,7 @@ export default function ComingSoon({ category, tagline, accentWord, description 
         left: "-5%",
         width: "clamp(200px, 30vw, 400px)",
         height: "clamp(200px, 30vw, 400px)",
-        background: "radial-gradient(circle, rgba(0,196,212,0.07) 0%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(25,25,25,0.07) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 
@@ -111,8 +111,8 @@ export default function ComingSoon({ category, tagline, accentWord, description 
           alignItems: "center",
           gap: ".5rem",
           padding: ".35rem 1rem",
-          background: "rgba(0,196,212,0.1)",
-          border: "1px solid rgba(0,196,212,0.25)",
+          background: "rgba(25,25,25,0.1)",
+          border: "1px solid rgba(25,25,25,0.25)",
           borderRadius: "999px",
           color: "var(--ac)",
           fontSize: ".7rem",
@@ -172,7 +172,7 @@ export default function ComingSoon({ category, tagline, accentWord, description 
         <div style={{
           width: "60px",
           height: "1px",
-          background: "rgba(0,196,212,0.4)",
+          background: "rgba(25,25,25,0.4)",
           marginBottom: "3rem",
         }} />
 
@@ -183,8 +183,8 @@ export default function ComingSoon({ category, tagline, accentWord, description 
             alignItems: "center",
             gap: ".75rem",
             padding: "1rem 2rem",
-            background: "rgba(0,196,212,0.08)",
-            border: "1px solid rgba(0,196,212,0.2)",
+            background: "rgba(25,25,25,0.08)",
+            border: "1px solid rgba(25,25,25,0.2)",
             borderRadius: "12px",
             color: "var(--ac)",
             fontWeight: 600,
@@ -223,7 +223,7 @@ export default function ComingSoon({ category, tagline, accentWord, description 
                 outline: "none",
                 transition: "border-color .2s",
               }}
-              onFocus={e => e.target.style.borderColor = "rgba(0,196,212,0.5)"}
+              onFocus={e => e.target.style.borderColor = "rgba(25,25,25,0.5)"}
               onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
             />
             <button type="submit" style={{
@@ -271,7 +271,7 @@ export default function ComingSoon({ category, tagline, accentWord, description 
               textTransform: "uppercase",
               color: "rgba(255,255,255,0.5)",
             }}>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(0,196,212,0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(25,25,25,0.8)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d={f.icon}/>
               </svg>
               {f.label}

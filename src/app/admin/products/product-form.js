@@ -41,6 +41,24 @@ export default function ProductForm({ action, categories, product, images = [] }
   const [compareAtPrice, setCompareAtPrice] = useState(product?.compare_at_price ?? "");
   const [imageUrl, setImageUrl] = useState(product?.image_url || "");
 
+  const [sizeRows, setSizeRows] = useState(() =>
+    (product?.sizes || []).map((s) =>
+      typeof s === "string"
+        ? { size: s, price: "", stock: "", description: "" }
+        : { size: s.size || "", price: s.price ?? "", stock: s.stock ?? "", description: s.description || "" }
+    )
+  );
+
+  function addSizeRow() {
+    setSizeRows((rows) => [...rows, { size: "", price: "", stock: "", description: "" }]);
+  }
+  function updateSizeRow(i, field, value) {
+    setSizeRows((rows) => rows.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
+  }
+  function removeSizeRow(i) {
+    setSizeRows((rows) => rows.filter((_, idx) => idx !== i));
+  }
+
   // Click-to-add photo slots — the hidden file input's selection replaces
   // itself every time it's opened, so we keep our own running list and
   // rewrite the input's files (via DataTransfer) after every pick so the
@@ -198,23 +216,68 @@ export default function ProductForm({ action, categories, product, images = [] }
         <label className="auth-label" htmlFor="imageUrl" style={{ marginTop: "1rem" }}>or Image URL / path (e.g. /cat_tshirt.png) — used if no photo uploaded above</label>
         <input className="auth-input" id="imageUrl" name="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="/cat_tshirt.png" />
 
-        <label className="auth-label" htmlFor="sizes">
-          Sizes (comma separated — size:price:stock, e.g. M:1100:5 — leave price or stock blank to use the product&apos;s default; stock 0 shows that size sold out)
-        </label>
-        <input
-          className="auth-input"
-          id="sizes"
-          name="sizes"
-          defaultValue={(product?.sizes || [])
-            .map((s) => {
-              if (typeof s === "string") return s;
-              const price = s.price != null ? s.price : "";
-              const stock = s.stock != null ? s.stock : "";
-              return stock !== "" ? `${s.size}:${price}:${stock}` : price !== "" ? `${s.size}:${price}` : s.size;
-            })
-            .join(", ")}
-          placeholder="S, M:1100:5, L:1200, XL::0"
-        />
+        <label className="auth-label">Sizes</label>
+        <p style={{ color: "var(--muted, #999)", fontSize: ".78rem", margin: "0 0 .6rem" }}>
+          Add as many sizes as you want. Price, stock and description are optional per size —
+          leave blank to use the product&apos;s own price / stock / description above.
+        </p>
+
+        <input type="hidden" name="sizes" value={JSON.stringify(sizeRows.filter((r) => r.size.trim()))} />
+
+        {sizeRows.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: ".6rem", marginBottom: ".6rem" }}>
+            {sizeRows.map((row, i) => (
+              <div key={i} style={{ border: "1px solid var(--border, #ddd)", borderRadius: "8px", padding: ".6rem" }}>
+                <div style={{ display: "flex", gap: ".5rem", alignItems: "center" }}>
+                  <input
+                    className="auth-input"
+                    placeholder="Size (e.g. M)"
+                    value={row.size}
+                    onChange={(e) => updateSizeRow(i, "size", e.target.value)}
+                    style={{ flex: "1 1 80px" }}
+                  />
+                  <input
+                    className="auth-input"
+                    type="number"
+                    step="0.01"
+                    placeholder="Price (optional)"
+                    value={row.price}
+                    onChange={(e) => updateSizeRow(i, "price", e.target.value)}
+                    style={{ flex: "1 1 110px" }}
+                  />
+                  <input
+                    className="auth-input"
+                    type="number"
+                    placeholder="Stock (optional)"
+                    value={row.stock}
+                    onChange={(e) => updateSizeRow(i, "stock", e.target.value)}
+                    style={{ flex: "1 1 110px" }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeSizeRow(i)}
+                    aria-label="Remove size"
+                    style={{ width: "28px", height: "28px", borderRadius: "50%", border: "none", background: "#FF6B6B", color: "#fff", fontSize: ".8rem", cursor: "pointer", flexShrink: 0 }}
+                  >
+                    ×
+                  </button>
+                </div>
+                <textarea
+                  className="auth-input"
+                  placeholder="Description for this size only (optional)"
+                  rows={2}
+                  value={row.description}
+                  onChange={(e) => updateSizeRow(i, "description", e.target.value)}
+                  style={{ marginTop: ".5rem" }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        <button type="button" className="btn-outline" onClick={addSizeRow} style={{ alignSelf: "flex-start" }}>
+          + Add Size
+        </button>
 
         <label className="auth-label" htmlFor="stock">Stock</label>
         <input className="auth-input" id="stock" name="stock" type="number" defaultValue={product?.stock ?? 0} />

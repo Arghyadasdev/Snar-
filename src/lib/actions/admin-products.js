@@ -50,24 +50,29 @@ function slugify(name) {
     .replace(/(^-|-$)/g, "");
 }
 
-// "S, M:1100, L:1200:5, XL::0" — size alone uses the product's base price
-// and overall stock; "size:price" overrides price; "size:price:stock" also
-// caps that size's own stock (0 = shows as sold out on the product page).
-// Either field can be left blank (e.g. "M::5" = base price, 5 in stock).
+// The product form serializes its size rows (size, price, stock,
+// description — each optional except size) to JSON in a hidden field.
 function parseSizes(raw) {
-  return (raw || "")
-    .split(",")
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => {
-      const [sizePart, pricePart, stockPart] = entry.split(":");
-      const size = sizePart?.trim();
-      const price = pricePart?.trim() ? Number(pricePart.trim()) : null;
-      const stock = stockPart?.trim() ? Number(stockPart.trim()) : null;
+  if (!raw) return [];
+  let rows;
+  try {
+    rows = JSON.parse(raw);
+  } catch {
+    return [];
+  }
+  if (!Array.isArray(rows)) return [];
+
+  return rows
+    .map((r) => {
+      const size = r.size?.toString().trim();
+      const price = r.price !== "" && r.price != null ? Number(r.price) : null;
+      const stock = r.stock !== "" && r.stock != null ? Number(r.stock) : null;
+      const description = r.description?.toString().trim() || null;
       return {
         size,
         price: Number.isFinite(price) ? price : null,
         stock: Number.isFinite(stock) ? stock : null,
+        description,
       };
     })
     .filter((s) => s.size);

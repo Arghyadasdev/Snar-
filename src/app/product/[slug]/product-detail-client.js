@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { toggleWishlist } from "@/lib/actions/wishlist";
-import { resolveSizePrice } from "@/lib/pricing";
+import { resolveSizePrice, resolveSizeDescription } from "@/lib/pricing";
 import ProductGalleryView from "./product-gallery-view";
 import ProductActions from "./product-actions";
 
@@ -51,6 +51,7 @@ export default function ProductDetailClient({
 
   const effectiveStock = currentVariant ? currentVariant.stock : product.stock;
   const effectivePrice = resolveSizePrice(sizes, size, product.price);
+  const effectiveDescription = resolveSizeDescription(sizes, size, product.description);
   const discountPct =
     product.compare_at_price > effectivePrice
       ? Math.round((1 - effectivePrice / product.compare_at_price) * 100)
@@ -90,7 +91,7 @@ export default function ProductDetailClient({
           </div>
 
           <h1 className="product-detail-name">{product.name}</h1>
-          {product.description && <p className="pd2-subtitle">{product.description}</p>}
+          {effectiveDescription && <p className="pd2-subtitle">{effectiveDescription}</p>}
 
           {rating.count > 0 && (
             <div className="pd2-rating">
@@ -204,7 +205,7 @@ export default function ProductDetailClient({
           {tab === "description" && (
             <div>
               <h3 className="pd2-tab-heading">Product Description</h3>
-              <p className="pd2-tab-body">{product.description}</p>
+              <p className="pd2-tab-body">{effectiveDescription}</p>
               {specs.length > 0 && (
                 <ul className="pd2-checklist">
                   {specs.map((s, i) => (

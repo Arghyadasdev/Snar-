@@ -20,21 +20,21 @@ const STYLES = `
 .snar-footer-wrapper {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
-  --pill-bg-1: rgba(0,196,212,0.06);
-  --pill-bg-2: rgba(0,196,212,0.02);
+  --pill-bg-1: rgba(25,25,25,0.06);
+  --pill-bg-2: rgba(25,25,25,0.02);
   --pill-shadow: rgba(0,0,0,0.5);
-  --pill-highlight: rgba(0,196,212,0.12);
+  --pill-highlight: rgba(25,25,25,0.12);
   --pill-inset-shadow: rgba(0,0,0,0.6);
-  --pill-border: rgba(0,196,212,0.15);
-  --pill-bg-1-hover: rgba(0,196,212,0.14);
-  --pill-bg-2-hover: rgba(0,196,212,0.06);
-  --pill-border-hover: rgba(0,196,212,0.4);
+  --pill-border: rgba(25,25,25,0.15);
+  --pill-bg-1-hover: rgba(25,25,25,0.14);
+  --pill-bg-2-hover: rgba(25,25,25,0.06);
+  --pill-border-hover: rgba(25,25,25,0.4);
   --pill-shadow-hover: rgba(0,0,0,0.6);
-  --pill-highlight-hover: rgba(0,196,212,0.22);
+  --pill-highlight-hover: rgba(25,25,25,0.22);
   --foreground: #ffffff;
   --background: #09090F;
-  --primary: #00C4D4;
-  --secondary: #00A8B8;
+  --primary: #191919;
+  --secondary: #2B2B2B;
   --muted-fg: #6B7280;
   --border-color: rgba(255,255,255,0.08);
   --destructive: #ef4444;
@@ -70,7 +70,7 @@ const STYLES = `
 .snar-footer-aurora {
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(0,196,212,0.14) 0%,
+    rgba(25,25,25,0.14) 0%,
     rgba(0,168,184,0.1)  40%,
     transparent 70%
   );
@@ -188,15 +188,15 @@ MagneticButton.displayName = "MagneticButton";
 const MarqueeItem = () => (
   <div style={{ display:"flex", alignItems:"center", gap:"3rem", padding:"0 1.5rem" }}>
     <span>Premium Sportswear</span>
-    <span style={{color:"rgba(0,196,212,0.6)"}}>✦</span>
+    <span style={{color:"rgba(25,25,25,0.6)"}}>✦</span>
     <span>Ignite Your Edge</span>
-    <span style={{color:"rgba(0,196,212,0.6)"}}>✦</span>
+    <span style={{color:"rgba(25,25,25,0.6)"}}>✦</span>
     <span>Performance Driven</span>
-    <span style={{color:"rgba(0,196,212,0.6)"}}>✦</span>
+    <span style={{color:"rgba(25,25,25,0.6)"}}>✦</span>
     <span>Built for Champions</span>
-    <span style={{color:"rgba(0,196,212,0.6)"}}>✦</span>
+    <span style={{color:"rgba(25,25,25,0.6)"}}>✦</span>
     <span>Free Shipping ₹999+</span>
-    <span style={{color:"rgba(0,196,212,0.6)"}}>✦</span>
+    <span style={{color:"rgba(25,25,25,0.6)"}}>✦</span>
   </div>
 );
 
@@ -292,7 +292,7 @@ export function CinematicFooter() {
               {/* Primary CTAs */}
               <div style={{ display:"flex", flexWrap:"wrap", justifyContent:"center", gap:"1rem" }}>
                 <MagneticButton as="a" href="#" style={{
-                  background:"var(--ac,#00C4D4)", color:"#09090F",
+                  background:"var(--ac,#191919)", color:"#09090F",
                   fontWeight:700, fontSize:".85rem", letterSpacing:".1em",
                   padding:".9rem 2.2rem", border:"none",
                   textTransform:"uppercase",
@@ -347,7 +347,7 @@ export function CinematicFooter() {
                   color:"#6B7280", textDecoration:"none",
                   transition:"border-color .2s, color .2s",
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor="#00C4D4"; e.currentTarget.style.color="#00C4D4"; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor="#191919"; e.currentTarget.style.color="#191919"; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor="rgba(255,255,255,0.08)"; e.currentTarget.style.color="#6B7280"; }}
                 >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
